@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="health_permission_description">EVA utiliza dados de saúde para monitorar seu bem-estar e detectar possíveis riscos à saúde.</string>
+</resources>

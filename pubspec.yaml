@@ -1,0 +1,118 @@
+name: ironmind
+description: IronMind - Inspeção Industrial com NPU em Tempo Real
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.1
+
+  # Navigation
+  go_router: ^13.0.0
+
+  # ─── IRONMIND: NPU Inference ───
+  onnxruntime: ^1.17.0          # ONNX Runtime (NPU via NNAPI delegate)
+  tflite_flutter: ^0.10.4       # TFLite (YAMNet, fallback YOLO)
+  camera: ^0.10.5+5             # Camera stream 30fps
+  image: ^4.1.4                 # Image processing (YUV→RGB)
+
+  # ─── IRONMIND: Voice (EVA) ───
+  sherpa_onnx: ^1.12.20         # Whisper STT offline
+  flutter_tts: ^4.0.2           # Piper TTS offline
+  sound_stream: ^0.4.2          # Audio stream para YAMNet
+  speech_to_text: ^7.0.0        # Voice navigation
+
+  # ─── IRONMIND: Data ───
+  hive_flutter: ^1.1.0          # NoSQL local database
+  connectivity_plus: ^5.0.2     # Monitoramento de rede
+
+  # ─── EVA-Mobile (herdado) ───
+  # Firebase (cloud fallback)
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.9
+  flutter_local_notifications: ^18.0.1
+
+  # Audio
+  audioplayers: ^5.2.1
+  permission_handler: 11.3.0
+
+  # Network
+  web_socket_channel: ^2.4.0
+  http: ^1.2.0
+
+  # Storage
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  google_sign_in: ^6.1.5
+  path_provider: ^2.1.2
+
+  # Utilities
+  logger: ^2.0.2+1
+  flutter_dotenv: ^5.1.0
+  package_info_plus: ^9.0.0
+  intl: ^0.20.2
+  url_launcher: ^6.2.4
+
+  # UI
+  cupertino_icons: ^1.0.6
+
+  # Location (inspeções geolocalizadas)
+  geolocator: ^10.1.0
+
+  # Sensors (vibração industrial)
+  sensors_plus: ^4.0.2
+  vibration: ^3.1.5
+
+  # Background processing
+  flutter_background_service: ^5.0.5
+  wakelock_plus: ^1.1.4
+
+  # FFI (native bridges)
+  ffi: ^2.1.2
+
+dependency_overrides:
+  record_platform_interface: 1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1
+  build_runner: ^2.4.8
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # IronMind configs
+    - assets/config/classes_ironmind.yaml
+    - assets/config/thresholds.yaml
+    - assets/config/voice_commands_pt.yaml
+    - assets/models/metadata/model_versions.json
+
+    # IronMind models (NPU)
+    - assets/models/detection/
+    - assets/models/segmentation/
+    - assets/models/vlm/
+    - assets/models/audio/
+
+    # EVA-Mobile assets (herdado)
+    - assets/images/
+    - assets/sounds/
+    - assets/models/ggml-small-q5_1.bin
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icone.png"
+  adaptive_icon_background: "#1A1A2E"
+  adaptive_icon_foreground: "assets/images/icone.png"

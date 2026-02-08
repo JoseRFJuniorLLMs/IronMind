@@ -1,0 +1,78 @@
+# IronMind - Comandos de Voz (Português BR)
+wake_words:
+  - "eva"
+  - "iron"
+
+commands:
+  inspection:
+    diagnosticar:
+      aliases: ["diagnosticar", "analisar", "verificar"]
+      action: diagnose
+      description: "EdgeSAM + Moondream no componente detectado"
+    capturar:
+      aliases: ["capturar", "foto", "fotografar"]
+      action: capture
+      description: "Congela frame e analisa"
+    o_que_e_isso:
+      aliases: ["o que é isso", "que peça é essa", "identificar"]
+      action: identify
+      description: "Moondream descreve o que vê"
+    esta_bom:
+      aliases: ["está bom", "tá bom", "ok"]
+      action: check_confidence
+      description: "Fala a confiança do YOLO26n"
+    proxima:
+      aliases: ["próxima peça", "próxima", "seguinte"]
+      action: next
+      description: "Reset overlay, novo scan"
+    gravar:
+      aliases: ["gravar defeito", "salvar", "registrar"]
+      action: save
+      description: "Foto + diagnóstico → log local"
+
+  correction:
+    confirmar:
+      aliases: ["está correto", "correto", "confirmar", "sim"]
+      action: confirm
+      description: "Confirma diagnóstico"
+    rejeitar:
+      aliases: ["não é isso", "errado", "incorreto"]
+      action: reject
+      description: "Marca para revisão"
+    corrigir_classe:
+      aliases: ["é uma mangueira", "é um parafuso", "é uma correia"]
+      action: correct_class
+      description: "Corrige classe do componente"
+    severidade:
+      aliases: ["gravidade alta", "urgente", "crítico"]
+      action: severity_high
+      description: "Override severidade para alta"
+
+  report:
+    resumo:
+      aliases: ["resumo do dia", "resumo", "estatísticas"]
+      action: daily_summary
+      description: "TTS com estatísticas do dia"
+    quantos:
+      aliases: ["quantos defeitos", "quantas reprovações"]
+      action: defect_count
+      description: "Conta defeitos encontrados"
+    explicar:
+      aliases: ["explicar", "por quê", "por que"]
+      action: explain
+      description: "Moondream re-explica último diagnóstico"
+    enviar:
+      aliases: ["enviar dados", "sincronizar", "sync"]
+      action: sync
+      description: "Força sync se tiver internet"
+
+  navigation:
+    historico:
+      aliases: ["histórico", "últimas inspeções"]
+      action: open_history
+    configuracoes:
+      aliases: ["configurações", "settings"]
+      action: open_settings
+    repetir:
+      aliases: ["repetir", "de novo"]
+      action: repeat_last

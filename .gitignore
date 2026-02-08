@@ -1,0 +1,57 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Android
+android/assets/models
+android/app/debug
+android/app/profile
+android/app/release
+android/.gradle
+android/captures/
+android/local.properties
+android/build/
+android/app/build/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Secrets
+.env
+*.keystore
+# google-services.json - COMENTADO: necessário para build
+GoogleService-Info.plist
+serviceAccountKey.json
+
+# Logs
+*.log
+
+# Large binaries (APK, models)
+*.apk
+*.aab
+assets/models/*.bin
+assets/models/*.tflite
+ggml-*.bin
+
+# Build artifacts
+*.bin
+*.dex
+*.class

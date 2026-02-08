@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1017997949026",
+    "project_id": "eva-push-01",
+    "storage_bucket": "eva-push-01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017997949026:android:2a1512c94c29934cda793b",
+        "android_client_info": {
+          "package_name": "com.eva.br"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJiWQtzLwwfv6e2dOSxnAoEirKxrZuTLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

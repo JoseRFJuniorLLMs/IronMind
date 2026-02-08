@@ -1,0 +1,55 @@
+nc: 40
+names:
+  # UNIVERSAL (todas as máquinas)
+  - correia_ok
+  - correia_desgastada
+  - mangueira_ok
+  - mangueira_vazando
+  - filtro_ok
+  - filtro_sujo
+  - parafuso_ok
+  - parafuso_solto
+  - pneu_ok
+  - pneu_careca
+  - oleo_ok
+  - oleo_vazando
+  - corrosao_leve
+  - corrosao_grave
+  - solda_ok
+  - solda_trincada
+  - vedacao_ok
+  - vedacao_comprometida
+  - conexao_eletrica_ok
+  - conexao_eletrica_solta
+
+  # TRATORES
+  - implemento_ok
+  - implemento_danificado
+  - eixo_carda_ok
+  - eixo_carda_desgastado
+  - hidraulico_ok
+  - hidraulico_vazando
+  - lamina_ok
+  - lamina_gasta
+
+  # CAMINHÕES
+  - freio_ok
+  - freio_gasto
+  - suspensao_ok
+  - suspensao_danificada
+  - escapamento_ok
+  - escapamento_furado
+  - carroceria_ok
+  - carroceria_amassada
+
+  # MINERAÇÃO
+  - esteira_ok
+  - esteira_desgastada
+  - cacamba_ok
+  - cacamba_trincada
+  - cilindro_ok
+  - cilindro_vazando
+  - rolamento_ok
+  - rolamento_ruidoso
+  - britador_ok
+  - britador_desgastado

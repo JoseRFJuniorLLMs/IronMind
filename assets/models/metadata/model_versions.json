@@ -1,0 +1,76 @@
+{
+  "models": {
+    "yolo26n": {
+      "version": "1.0.0",
+      "file": "detection/yolo26n_ironmind_int8.onnx",
+      "size_mb": 4.2,
+      "format": "onnx",
+      "quantization": "int8",
+      "role": "primary_detector",
+      "status": "pending_finetune"
+    },
+    "yolo_nas_s": {
+      "version": "1.0.0",
+      "file": "detection/yolo_nas_s_int8.onnx",
+      "size_mb": 6.0,
+      "format": "onnx",
+      "quantization": "int8",
+      "role": "fallback_1",
+      "status": "pending_download"
+    },
+    "yolov8n": {
+      "version": "1.0.0",
+      "file": "detection/yolov8n_int8.tflite",
+      "size_mb": 5.0,
+      "format": "tflite",
+      "quantization": "int8",
+      "role": "fallback_2",
+      "status": "pending_download"
+    },
+    "edgesam": {
+      "version": "1.0.0",
+      "file": "segmentation/edgesam_int8.onnx",
+      "size_mb": 9.4,
+      "format": "onnx",
+      "quantization": "int8",
+      "role": "segmentation",
+      "status": "pending_download"
+    },
+    "moondream": {
+      "version": "0.5b",
+      "file": "vlm/moondream_0.5b_int8.onnx",
+      "size_mb": 187,
+      "format": "onnx",
+      "quantization": "int8",
+      "role": "diagnosis",
+      "status": "pending_download"
+    },
+    "whisper_small": {
+      "version": "q5_1",
+      "file": "audio/whisper_small_q5.onnx",
+      "size_mb": 140,
+      "format": "onnx",
+      "quantization": "q5",
+      "role": "stt",
+      "status": "pending_download"
+    },
+    "piper_tts": {
+      "version": "pt_br",
+      "file": "audio/piper_tts_pt_br.onnx",
+      "size_mb": 15,
+      "format": "onnx",
+      "role": "tts",
+      "status": "pending_download"
+    },
+    "yamnet": {
+      "version": "1.0",
+      "file": "audio/yamnet.tflite",
+      "size_mb": 3,
+      "format": "tflite",
+      "role": "audio_classification",
+      "status": "pending_download"
+    }
+  },
+  "last_updated": "2026-02-08",
+  "total_size_mb": 370
+}

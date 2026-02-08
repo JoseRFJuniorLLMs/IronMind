@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVA Debug Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .section {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.idle {
+            background: #666;
+        }
+
+        .status-indicator.connecting {
+            background: #ff9900;
+        }
+
+        .status-indicator.registering {
+            background: #ffff00;
+        }
+
+        .status-indicator.starting_call {
+            background: #00ffff;
+        }
+
+        .status-indicator.initializing_audio {
+            background: #9900ff;
+        }
+
+        .status-indicator.active {
+            background: #00ff00;
+        }
+
+        .status-indicator.error {
+            background: #ff0000;
+        }
+
+        .status-indicator.offline {
+            background: #666;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .info-item {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #00ff00;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #00ff00;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .info-value.error {
+            color: #ff0000;
+        }
+
+        .info-value.warning {
+            color: #ff9900;
+        }
+
+        .info-value.success {
+            color: #00ff00;
+        }
+
+        .log-container {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .log-entry.info {
+            color: #00ff00;
+        }
+
+        .log-entry.warning {
+            color: #ff9900;
+            background: #332200;
+        }
+
+        .log-entry.error {
+            color: #ff0000;
+            background: #330000;
+        }
+
+        .log-entry.success {
+            color: #00ffff;
+        }
+
+        .log-time {
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00ffff;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chart-container {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 4px;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to top, #00ff00, #00ffff);
+            transition: height 0.3s;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 4px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .config-input {
+            width: 100%;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            color: #00ff00;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 EVA DEBUG MONITOR</h1>
+
+        <div class="section">
+            <div class="section-title">⚙️ CONFIGURATION</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">CPF</div>
+                    <input type="text" id="cpfInput" class="config-input" value="12345678900"
+                        placeholder="Digite o CPF">
+                </div>
+                <div class="info-item">
+                    <div class="info-label">WebSocket URL</div>
+                    <input type="text" id="wsUrlInput" class="config-input"
+                        value="wss://eva-mind-sdk-285161077100.europe-southwest1.run.app/ws/pcm">
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" onclick="startEVA()">▶️ START</button>
+            <button id="stopBtn" onclick="stopEVA()" disabled>⏹️ STOP</button>
+            <button onclick="clearLogs()">🗑️ Clear Logs</button>
+            <button onclick="exportLogs()">💾 Export</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="status-indicator" id="statusIndicator"></span>
+                📊 SYSTEM STATUS
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Current State</div>
+                    <div class="info-value" id="currentState">idle</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">WebSocket</div>
+                    <div class="info-value" id="wsStatus">disconnected</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Is Registered</div>
+                    <div class="info-value" id="isRegistered">false</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Session Created</div>
+                    <div class="info-value" id="isSessionCreated">false</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Session ID</div>
+                    <div class="info-value" id="sessionID">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Audio Context</div>
+                    <div class="info-value" id="audioStatus">inactive</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Reconnect Attempts</div>
+                    <div class="info-value" id="reconnectAttempts">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Uptime</div>
+                    <div class="info-value" id="uptime">0s</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎤 AUDIO METRICS</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Audio Sent</div>
+                    <div class="metric-value" id="audioSent">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Audio Received</div>
+                    <div class="metric-value" id="audioReceived">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Send Rate</div>
+                    <div class="info-value" id="sendRate">0 pkt/s</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Receive Rate</div>
+                    <div class="info-value" id="receiveRate">0 pkt/s</div>
+                </div>
+            </div>
+            <div class="chart-container" id="audioChart"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📝 EVENT LOG</div>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+        // Estado global
+        let ws = null;
+        let audioContext = null;
+        let scriptProcessor = null;
+        let mediaStream = null;
+        let isActive = false;
+        let audioSentCount = 0;
+        let audioReceivedCount = 0;
+        let isRegistered = false;
+        let isSessionCreated = false;
+        let currentState = 'idle';
+        let sessionID = null;
+        let stateResolvers = {};
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+        let startTime = null;
+        let lastSentCount = 0;
+        let lastReceivedCount = 0;
+
+        // Chart data
+        const maxBars = 50;
+        let audioSentHistory = [];
+        let audioReceivedHistory = [];
+
+        // Playback
+        let playbackContext = null;
+        let playbackQueue = [];
+        let isPlaying = false;
+
+        // Logging
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="log-time">${time}</span>${message}`;
+
+            const container = document.getElementById('logContainer');
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+            log('Logs cleared', 'info');
+        }
+
+        function exportLogs() {
+            const logs = document.getElementById('logContainer').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `eva-debug-${Date.now()}.txt`;
+            a.click();
+            log('Logs exported', 'success');
+        }
+
+        // UI Updates
+        function updateUI() {
+            document.getElementById('currentState').textContent = currentState;
+            document.getElementById('statusIndicator').className = `status-indicator ${currentState}`;
+            document.getElementById('wsStatus').textContent = ws ? (ws.readyState === WebSocket.OPEN ? 'connected' : 'disconnected') : 'disconnected';
+            document.getElementById('isRegistered').textContent = isRegistered;
+            document.getElementById('isSessionCreated').textContent = isSessionCreated;
+            document.getElementById('sessionID').textContent = sessionID || '-';
+            document.getElementById('audioStatus').textContent = audioContext ? 'active' : 'inactive';
+            document.getElementById('audioSent').textContent = audioSentCount;
+            document.getElementById('audioReceived').textContent = audioReceivedCount;
+            document.getElementById('reconnectAttempts').textContent = reconnectAttempts;
+
+            // Calcular taxas
+            const sentRate = audioSentCount - lastSentCount;
+            const receivedRate = audioReceivedCount - lastReceivedCount;
+            document.getElementById('sendRate').textContent = `${sentRate} pkt/s`;
+            document.getElementById('receiveRate').textContent = `${receivedRate} pkt/s`;
+            lastSentCount = audioSentCount;
+            lastReceivedCount = audioReceivedCount;
+
+            // Atualizar gráfico
+            audioSentHistory.push(sentRate);
+            audioReceivedHistory.push(receivedRate);
+            if (audioSentHistory.length > maxBars) {
+                audioSentHistory.shift();
+                audioReceivedHistory.shift();
+            }
+            updateChart();
+
+            // Uptime
+            if (startTime) {
+                const uptime = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('uptime').textContent = `${uptime}s`;
+            }
+
+            // Timestamp
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        }
+
+        function updateChart() {
+            const container = document.getElementById('audioChart');
+            container.innerHTML = '';
+
+            const max = Math.max(...audioSentHistory, ...audioReceivedHistory, 10);
+
+            audioSentHistory.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.left = `${index * 10}px`;
+                bar.style.height = `${(value / max) * 100}%`;
+                bar.style.background = 'linear-gradient(to top, #00ff00, #00ffff)';
+                container.appendChild(bar);
+            });
+        }
+
+        function updateState(newState) {
+            const oldState = currentState;
+            currentState = newState;
+            log(`Estado mudou: ${oldState} → ${newState}`, 'info');
+
+            if (stateResolvers[newState]) {
+                stateResolvers[newState]();
+                delete stateResolvers[newState];
+            }
+
+            updateUI();
+        }
+
+        function waitForState(targetState, timeout) {
+            return new Promise((resolve, reject) => {
+                log(`Aguardando estado: ${targetState}`, 'info');
+
+                if (currentState === targetState) {
+                    resolve();
+                    return;
+                }
+
+                stateResolvers[targetState] = resolve;
+
+                setTimeout(() => {
+                    if (stateResolvers[targetState]) {
+                        delete stateResolvers[targetState];
+                        log(`TIMEOUT aguardando ${targetState}`, 'error');
+                        reject(new Error(`Timeout aguardando ${targetState}`));
+                    }
+                }, timeout);
+            });
+        }
+
+        // WebSocket
+        function connectWebSocket() {
+            return new Promise((resolve, reject) => {
+                const wsUrl = document.getElementById('wsUrlInput').value;
+                log(`Conectando WebSocket: ${wsUrl}`, 'info');
+
+                const timeout = setTimeout(() => {
+                    log('Timeout conectando WebSocket', 'error');
+                    reject(new Error('Timeout WebSocket (10s)'));
+                }, 10000);
+
+                ws = new WebSocket(wsUrl);
+
+                ws.onopen = () => {
+                    clearTimeout(timeout);
+                    log('✅ WebSocket CONECTADO!', 'success');
+                    reconnectAttempts = 0;
+                    updateUI();
+                    resolve();
+                };
+
+                ws.onmessage = handleWebSocketMessage;
+
+                ws.onerror = (err) => {
+                    clearTimeout(timeout);
+                    log('❌ WebSocket ERROR', 'error');
+                    reject(new Error('Erro WebSocket'));
+                };
+
+                ws.onclose = (event) => {
+                    log(`WebSocket FECHADO: ${event.code} ${event.reason}`, 'warning');
+                    updateUI();
+
+                    if (event.code === 1000) {
+                        if (isActive) {
+                            updateState('offline');
+                            cleanup();
+                        }
+                        return;
+                    }
+
+                    if (isActive && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        reconnectAttempts++;
+                        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+                        log(`Tentativa ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} em ${delay}ms...`, 'warning');
+                        setTimeout(reconnectWebSocket, delay);
+                    } else {
+                        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+                            log('Máximo de tentativas atingido', 'error');
+                        }
+                        updateState('offline');
+                        cleanup();
+                    }
+                };
+            });
+        }
+
+        function reconnectWebSocket() {
+            log('Reconectando WebSocket...', 'info');
+            connectWebSocket()
+                .then(() => {
+                    log('Reconectado com sucesso!', 'success');
+                    const cpf = document.getElementById('cpfInput').value;
+                    const registerMsg = { type: 'register', cpf: cpf };
+                    ws.send(JSON.stringify(registerMsg));
+                    log('Re-registro enviado', 'info');
+                })
+                .catch(err => log(`Falha na reconexão: ${err.message}`, 'error'));
+        }
+
+        function handleWebSocketMessage(event) {
+            if (typeof event.data === 'string') {
+                try {
+                    const msg = JSON.parse(event.data);
+                    log(`📨 Mensagem recebida: ${JSON.stringify(msg)}`, 'info');
+
+                    if (msg.type === 'registered') {
+                        isRegistered = true;
+                        updateState('registered');
+                    } else if (msg.type === 'session_created') {
+                        isSessionCreated = true;
+                        updateState('session_created');
+                    } else if (msg.type === 'error') {
+                        log(`❌ Erro do servidor: ${msg.error}`, 'error');
+                        updateState('error');
+                    }
+                } catch (e) {
+                    log(`Erro ao parsear JSON: ${e.message}`, 'error');
+                }
+                return;
+            }
+
+            if (event.data instanceof Blob) {
+                audioReceivedCount++;
+                event.data.arrayBuffer().then(buffer => {
+                    playAudio(buffer);
+                });
+                updateUI();
+            }
+        }
+
+        // Audio - usando ScriptProcessor (compatível com file://)
+        async function initializeAudio() {
+            log('Solicitando microfone...', 'info');
+
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        sampleRate: 16000,
+                        channelCount: 1
+                    }
+                });
+                log('✅ Microfone obtido', 'success');
+            } catch (err) {
+                log(`❌ Microfone bloqueado: ${err.message}`, 'error');
+                throw err;
+            }
+
+            audioContext = new AudioContext({ sampleRate: 16000 });
+            await audioContext.resume();
+            log(`✅ AudioContext @ ${audioContext.sampleRate}Hz`, 'success');
+
+            // Usar ScriptProcessor ao invés de AudioWorklet (funciona em file://)
+            const source = audioContext.createMediaStreamSource(mediaStream);
+            const bufferSize = 4096;
+            scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+
+            let buffer = [];
+            const targetSize = 1600; // 100ms @ 16kHz
+
+            scriptProcessor.onaudioprocess = (e) => {
+                const inputData = e.inputBuffer.getChannelData(0);
+
+                for (let i = 0; i < inputData.length; i++) {
+                    buffer.push(inputData[i]);
+
+                    if (buffer.length >= targetSize) {
+                        // Converter para PCM16
+                        const pcm16 = new Int16Array(targetSize);
+                        for (let j = 0; j < targetSize; j++) {
+                            const s = Math.max(-1, Math.min(1, buffer[j]));
+                            pcm16[j] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                        }
+
+                        // Enviar via WebSocket
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            ws.send(pcm16.buffer);
+                            audioSentCount++;
+                        }
+
+                        buffer = [];
+                    }
+                }
+            };
+
+            source.connect(scriptProcessor);
+            scriptProcessor.connect(audioContext.destination);
+
+            log('✅ Sistema de áudio COMPLETO (ScriptProcessor)!', 'success');
+            updateUI();
+        }
+
+        function playAudio(pcm16Buffer) {
+            if (!playbackContext) {
+                playbackContext = new AudioContext({ sampleRate: 24000 });
+                playbackContext.resume();
+                log('🔊 Playback @ 24kHz', 'info');
+            }
+
+            const pcm16 = new Int16Array(pcm16Buffer);
+            const float32 = new Float32Array(pcm16.length);
+
+            for (let i = 0; i < pcm16.length; i++) {
+                float32[i] = pcm16[i] / (pcm16[i] < 0 ? 0x8000 : 0x7FFF);
+            }
+
+            const audioBuffer = playbackContext.createBuffer(1, float32.length, playbackContext.sampleRate);
+            audioBuffer.getChannelData(0).set(float32);
+
+            playbackQueue.push(audioBuffer);
+
+            if (!isPlaying) {
+                playNextInQueue();
+            }
+        }
+
+        function playNextInQueue() {
+            if (playbackQueue.length === 0) {
+                isPlaying = false;
+                return;
+            }
+
+            isPlaying = true;
+            const audioBuffer = playbackQueue.shift();
+
+            const source = playbackContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(playbackContext.destination);
+
+            source.onended = () => {
+                playNextInQueue();
+            };
+
+            source.start();
+        }
+
+        // Main functions
+        async function startEVA() {
+            const cpf = document.getElementById('cpfInput').value;
+            if (!cpf || cpf.length < 11) {
+                log('❌ CPF inválido!', 'error');
+                alert('Digite um CPF válido');
+                return;
+            }
+
+            log('🚀 INICIANDO EVA', 'success');
+            startTime = Date.now();
+
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('cpfInput').disabled = true;
+            document.getElementById('wsUrlInput').disabled = true;
+
+            try {
+                updateState('connecting');
+                await connectWebSocket();
+
+                updateState('registering');
+                const registerMsg = { type: 'register', cpf: cpf };
+                log(`Enviando REGISTER: ${JSON.stringify(registerMsg)}`, 'info');
+                ws.send(JSON.stringify(registerMsg));
+                await waitForState('registered', 10000);
+
+                updateState('starting_call');
+                sessionID = 'web-' + Date.now();
+                const callMsg = { type: 'start_call', cpf: cpf, session_id: sessionID };
+                log(`Enviando START_CALL: ${JSON.stringify(callMsg)}`, 'info');
+                ws.send(JSON.stringify(callMsg));
+                await waitForState('session_created', 15000);
+
+                updateState('initializing_audio');
+                await initializeAudio();
+
+                isActive = true;
+                updateState('active');
+                log('✅ EVA PRONTA! 💕', 'success');
+
+            } catch (err) {
+                log(`❌ ERRO FATAL: ${err.message}`, 'error');
+                updateState('error');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('cpfInput').disabled = false;
+                document.getElementById('wsUrlInput').disabled = false;
+            }
+        }
+
+        function stopEVA() {
+            log('🛑 Parando EVA...', 'warning');
+
+            if (ws) {
+                ws.send(JSON.stringify({ type: 'hangup' }));
+                ws.close();
+            }
+
+            cleanup();
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('cpfInput').disabled = false;
+            document.getElementById('wsUrlInput').disabled = false;
+        }
+
+        function cleanup() {
+            log('🧹 Limpando recursos...', 'info');
+
+            isActive = false;
+            isRegistered = false;
+            isSessionCreated = false;
+            startTime = null;
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(t => t.stop());
+                mediaStream = null;
+            }
+
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+
+            if (playbackContext) {
+                playbackContext.close();
+                playbackContext = null;
+            }
+
+            ws = null;
+            audioSentCount = 0;
+            audioReceivedCount = 0;
+            currentState = 'idle';
+            sessionID = null;
+            playbackQueue = [];
+            isPlaying = false;
+
+            updateUI();
+            log('✅ Cleanup completo', 'success');
+        }
+
+        // Update UI periodically
+        setInterval(updateUI, 1000);
+        updateUI();
+
+        log('Debug Monitor inicializado', 'success');
+        log('⚠️ Digite o CPF e clique em START', 'warning');
+    </script>
+</body>
+
+</html>

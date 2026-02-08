@@ -1,0 +1,156 @@
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+Variant: release
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+Variant: profile
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :audio_session:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :firebase_core:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :firebase_messaging:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :flutter_inappwebview_android:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :flutter_local_notifications:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :flutter_sound:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :path_provider_android:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :permission_handler_android:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+> Task :shared_preferences_android:signingReport
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\web2a\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: 5C:1B:C6:23:35:E6:7C:73:4B:04:A9:46:DA:39:99:47
+SHA1: 7C:42:61:4E:8F:B9:EA:68:67:8E:F4:C3:60:E4:65:4C:9C:F6:A1:AB
+SHA-256: D6:53:EB:B9:1A:18:1C:E4:A8:FE:87:FA:D9:31:95:63:37:41:E6:DC:5D:55:07:96:CB:BA:E2:F1:10:B4:3E:C5
+Valid until: Sunday, December 19, 2055
+----------
+
+[Incubating] Problems report is available at: file:///D:/dev/EVA/EVA-Mobile/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4s
+14 actionable tasks: 10 executed, 4 up-to-date
