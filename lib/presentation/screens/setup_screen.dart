@@ -33,7 +33,7 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Future<void> _loadSavedCpf() async {
-    final savedCpf = StorageService.getIdosoCpf();
+    final savedCpf = StorageService.getOperatorCpf();
     if (savedCpf != null && savedCpf.isNotEmpty) {
       setState(() {
         _cpfController.text = savedCpf; // O formatter vai aplicar a máscara
@@ -354,7 +354,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
   Future<void> _handleEmergency() async {
     try {
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       if (cpf == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

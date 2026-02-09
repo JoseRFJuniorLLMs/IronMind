@@ -82,10 +82,10 @@ class AppConfig {
     return url;
   }
 
-  static const String appName = 'EVA Mobile';
+  static const String appName = 'IronMind';
   static const String appVersion = '1.0.0';
 
-  /// Gemini API Key para análise de medicamentos
+  /// Gemini API Key para análise de inspeção
   static String get geminiApiKey {
     final key = dotenv.env['GEMINI_API_KEY'];
     if (key == null || key.isEmpty) {

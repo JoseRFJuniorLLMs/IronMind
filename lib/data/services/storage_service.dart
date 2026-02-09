@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 
-/// Serviço para gerenciar dados locais persistentes do idoso
+/// Serviço para gerenciar dados locais persistentes do operador
 /// 🔒 SECURITY: Tokens e credenciais são salvos com criptografia (SecureStorage)
 /// 📝 Dados não-sensíveis (nome, settings) usam SharedPreferences
 class StorageService {
@@ -15,10 +15,10 @@ class StorageService {
   );
 
   // Chaves de armazenamento - SharedPreferences (dados não-sensíveis)
-  static const String _keyIdosoId = 'idoso_id';
-  static const String _keyIdosoNome = 'idoso_nome';
-  static const String _keyIdosoCpf = 'idoso_cpf';
-  static const String _keyIdosoTelefone = 'idoso_telefone';
+  static const String _keyOperatorId = 'operator_id';
+  static const String _keyOperatorNome = 'operator_nome';
+  static const String _keyOperatorCpf = 'operator_cpf';
+  static const String _keyOperatorTelefone = 'operator_telefone';
   static const String _keyIsLoggedIn = 'is_logged_in';
 
   // Chaves de armazenamento - SecureStorage (dados sensíveis)
@@ -39,49 +39,49 @@ class StorageService {
     }
   }
 
-  /// Salva os dados do idoso após login/cadastro
-  static Future<bool> saveIdosoData({
-    required int idosoId,
+  /// Salva os dados do operator após login/cadastro
+  static Future<bool> saveOperatorData({
+    required int operatorId,
     required String nome,
     required String cpf,
     required String telefone, // Telefone agora é obrigatório
   }) async {
     try {
-      await _prefs?.setInt(_keyIdosoId, idosoId);
-      await _prefs?.setString(_keyIdosoNome, nome);
-      await _prefs?.setString(_keyIdosoCpf, cpf);
-      await _prefs?.setString(_keyIdosoTelefone, telefone); // Salva o telefone
+      await _prefs?.setInt(_keyOperatorId, operatorId);
+      await _prefs?.setString(_keyOperatorNome, nome);
+      await _prefs?.setString(_keyOperatorCpf, cpf);
+      await _prefs?.setString(_keyOperatorTelefone, telefone); // Salva o telefone
       await _prefs?.setBool(_keyIsLoggedIn, true);
       
-      _logger.i('✅ Idoso data saved: ID=$idosoId, Nome=$nome, CPF=$cpf, Telefone=$telefone');
+      _logger.i('✅ Operator data saved: ID=$operatorId, Nome=$nome, CPF=$cpf, Telefone=$telefone');
       return true;
     } catch (e) {
-      _logger.e('❌ Error saving idoso data: $e');
+      _logger.e('❌ Error saving operator data: $e');
       return false;
     }
   }
 
-  /// Obtém o ID do idoso
-  static int? getIdosoId() {
-    return _prefs?.getInt(_keyIdosoId);
+  /// Obtém o ID do operator
+  static int? getOperatorId() {
+    return _prefs?.getInt(_keyOperatorId);
   }
 
-  /// Obtém o nome do idoso
-  static String? getIdosoNome() {
-    return _prefs?.getString(_keyIdosoNome);
+  /// Obtém o nome do operator
+  static String? getOperatorNome() {
+    return _prefs?.getString(_keyOperatorNome);
   }
 
-  /// Obtém o CPF do idoso
-  static String? getIdosoCpf() {
-    return _prefs?.getString(_keyIdosoCpf);
+  /// Obtém o CPF do operator
+  static String? getOperatorCpf() {
+    return _prefs?.getString(_keyOperatorCpf);
   }
 
-  /// Obtém o Telefone do idoso
-  static String? getIdosoTelefone() {
-    return _prefs?.getString(_keyIdosoTelefone);
+  /// Obtém o Telefone do operator
+  static String? getOperatorTelefone() {
+    return _prefs?.getString(_keyOperatorTelefone);
   }
 
-  /// Verifica se há um idoso logado
+  /// Verifica se há um operator logado
   static bool isLoggedIn() {
     return _prefs?.getBool(_keyIsLoggedIn) ?? false;
   }
@@ -156,10 +156,10 @@ class StorageService {
   static Future<bool> clearAll() async {
     try {
       // Limpa SharedPreferences (dados não-sensíveis)
-      await _prefs?.remove(_keyIdosoId);
-      await _prefs?.remove(_keyIdosoNome);
-      await _prefs?.remove(_keyIdosoCpf);
-      await _prefs?.remove(_keyIdosoTelefone);
+      await _prefs?.remove(_keyOperatorId);
+      await _prefs?.remove(_keyOperatorNome);
+      await _prefs?.remove(_keyOperatorCpf);
+      await _prefs?.remove(_keyOperatorTelefone);
       await _prefs?.remove(_keyIsLoggedIn);
 
       // 🔒 Limpa SecureStorage (tokens criptografados)
@@ -182,10 +182,10 @@ class StorageService {
       return;
     }
     _logger.i('📊 Storage Data (SharedPreferences):');
-    _logger.i('  - Idoso ID: ${getIdosoId()}');
-    _logger.i('  - Idoso Nome: ${getIdosoNome()}');
-    _logger.i('  - Idoso CPF: ${getIdosoCpf()}');
-    _logger.i('  - Idoso Telefone: ${getIdosoTelefone()}');
+    _logger.i('  - Operator ID: ${getOperatorId()}');
+    _logger.i('  - Operator Nome: ${getOperatorNome()}');
+    _logger.i('  - Operator CPF: ${getOperatorCpf()}');
+    _logger.i('  - Operator Telefone: ${getOperatorTelefone()}');
     _logger.i('  - Is Logged In: ${isLoggedIn()}');
 
     _logger.i('🔒 Storage Data (SecureStorage - encrypted):');

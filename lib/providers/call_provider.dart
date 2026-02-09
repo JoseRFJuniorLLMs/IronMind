@@ -18,7 +18,7 @@ import '../data/services/websocket_service.dart';
 import '../data/services/websocket_video_service.dart'; // ✅ DEDICATED Video WebSocket
 import '../data/services/api_service.dart';
 import '../data/services/webrtc_service.dart' show WebRTCService, WebRTCConnectionState;
-import '../core/sentinela/sentinela_service.dart'; // ✅ Import Sentinela
+import '../core/sentinela/iron_sentinel_service.dart';
 
 enum CallStatus { idle, ringing, connecting, connected, ending, ended, error }
 
@@ -43,7 +43,7 @@ class CallProvider with ChangeNotifier {
 
   CallStatus _status = CallStatus.idle;
   String? _currentSessionId;
-  Map<String, dynamic>? _currentIdosoData;
+  Map<String, dynamic>? _currentUserData;
   DateTime? _callStartTime;
   String? _errorMessage;
 
@@ -72,9 +72,9 @@ class CallProvider with ChangeNotifier {
     // ✅ REGISTRAR CALLBACK DO FIREBASE (CRÍTICO!)
     // Fazemos isso no construtor para garantir que ouça chamadas
     // mesmo que o WebView demore a inicializar.
-    FirebaseService.onVoiceCallReceived = (sessionId, idosoData) {
+    FirebaseService.onVoiceCallReceived = (sessionId, userData) {
       _logger.i('📞 Callback do Firebase disparado no Provider!');
-      receiveCall(sessionId, idosoData: idosoData);
+      receiveCall(sessionId, userData: userData);
     };
   }
 
@@ -95,7 +95,7 @@ class CallProvider with ChangeNotifier {
   // Getters
   CallStatus get status => _status;
   String? get currentSessionId => _currentSessionId;
-  Map<String, dynamic>? get currentIdosoData => _currentIdosoData;
+  Map<String, dynamic>? get currentUserData => _currentUserData;
   bool get isCallActive => _status == CallStatus.connected;
   String? get errorMessage => _errorMessage;
   Duration get callDuration => _callDuration;
@@ -203,7 +203,7 @@ class CallProvider with ChangeNotifier {
   /// Método disparado pelo FirebaseService
   Future<void> receiveCall(
     String sessionId, {
-    Map<String, dynamic>? idosoData,
+    Map<String, dynamic>? userData,
   }) async {
     _logger.i('📞 ========================================');
     _logger.i('📞 RECEBENDO CHAMADA');
@@ -211,7 +211,7 @@ class CallProvider with ChangeNotifier {
     _logger.i('📞 ========================================');
 
     _currentSessionId = sessionId;
-    _currentIdosoData = idosoData;
+    _currentUserData = userData;
     _status = CallStatus.ringing;
     _logger.i('🔔 Provider Status changed to RINGING. Notifying listeners...');
     _errorMessage = null;
@@ -299,7 +299,7 @@ class CallProvider with ChangeNotifier {
 
       // ✅ FIX P0: Pausar Monitoramento de Segundo Plano (Libera Mic)
       _logger.i('🛡️ Pausando Sentinela para chamada...');
-      await SentinelaService.pause();
+      await IronSentinelService.pause();
 
       // ✅ FIX P0: Conectar WebSocket PRIMEIRO
       _logger.i('🔌 Conectando ao WebSocket via Dart...');
@@ -362,7 +362,7 @@ class CallProvider with ChangeNotifier {
       );
 
       // ✅ Enviar REGISTER com user_type
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       if (cpf == null) throw Exception('CPF não encontrado');
 
       // ✅ FIX CRÍTICO: Avisar ao CallKit que a chamada foi atendida
@@ -448,7 +448,7 @@ class CallProvider with ChangeNotifier {
     try {
       // ✅ FIX: Pausar Sentinela ANTES de abrir câmera/microfone
       _logger.i('🛡️ Pausando Sentinela para vídeo chamada...');
-      final micReleased = await SentinelaService.pause();
+      final micReleased = await IronSentinelService.pause();
       if (!micReleased) {
         _logger.w('⚠️ Timeout aguardando liberação do mic, tentando mesmo assim...');
       }
@@ -479,7 +479,7 @@ class CallProvider with ChangeNotifier {
 
       // 3. Gerar ID da Sessão
       final sessionId = 'video-${DateTime.now().millisecondsSinceEpoch}';
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       if (cpf == null) throw Exception('CPF não encontrado');
 
       // 4. ✅ Conectar ao WebSocket de VÍDEO (porta 8090, /ws/video)
@@ -567,13 +567,13 @@ class CallProvider with ChangeNotifier {
       });
 
       // 8. ✅ Notificar operadores web sobre chamada entrante
-      final idosoName = StorageService.getIdosoNome();
+      final operatorName = StorageService.getOperatorNome();
       _wsVideoService.sendMessage({
         'type': 'incoming_call_notification',
         'session_id': sessionId,
         'caller': {
           'cpf': cpf,
-          'name': idosoName ?? 'Paciente',
+          'name': operatorName ?? 'Operador',
         },
         'timestamp': DateTime.now().toIso8601String()
       });
@@ -699,7 +699,7 @@ class CallProvider with ChangeNotifier {
 
     // ✅ Retomar Sentinela
     _logger.i('🛡️ Retomando Sentinela...');
-    await SentinelaService.resume();
+    await IronSentinelService.resume();
 
     // ✅ Desconectar WebSocket de Áudio
     _wsSubscription?.cancel();
@@ -713,7 +713,7 @@ class CallProvider with ChangeNotifier {
     if (_currentSessionId != null && _callStartTime != null) {
       await _apiService.saveCallLog(
         sessionId: _currentSessionId!,
-        idosoId: _currentIdosoData?['id'] ?? 0,
+        idosoId: _currentUserData?['id'] ?? 0,
         startTime: _callStartTime!,
         endTime: DateTime.now(),
         duration: _callDuration,
@@ -740,7 +740,7 @@ class CallProvider with ChangeNotifier {
   void _resetState() {
     _status = CallStatus.idle;
     _currentSessionId = null;
-    _currentIdosoData = null;
+    _currentUserData = null;
     _callDuration = Duration.zero;
     _callStartTime = null;
     _totalPacketsReceived = 0;

@@ -14,8 +14,7 @@ import 'firebase_options.dart';
 import 'data/services/firebase_service.dart';
 import 'data/services/callkit_service.dart';
 import 'data/services/storage_service.dart';
-import 'core/sentinela/sentinela_service.dart';
-// import 'data/workers/health_sync_worker.dart'; // ✅ TEMPORARIAMENTE COMENTADO - depende de workmanager
+import 'core/sentinela/iron_sentinel_service.dart';
 
 // Providers
 import 'providers/call_provider.dart';
@@ -24,21 +23,17 @@ import 'providers/notification_provider.dart';
 import 'providers/accessibility_provider.dart';
 
 // Screens
-import 'presentation/screens/permissions_screen.dart';
 import 'presentation/screens/setup_screen.dart';
 import 'presentation/screens/home/home_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/call/call_screen.dart';
-import 'presentation/screens/call/video_screen.dart'; // ✅ Video Screen Import
+import 'presentation/screens/call/video_screen.dart';
 import 'presentation/screens/complete_diagnostic_screen.dart';
-import 'presentation/screens/schedule/schedule_screen.dart'; // ✅ Agendamento Import
+import 'presentation/screens/schedule/schedule_screen.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/splash/splash_screen.dart';
-import 'presentation/screens/medicamentos/medicamentos_screen.dart';
-import 'presentation/screens/contatos/contatos_emergencia_screen.dart';
-import 'screens/medication_scanner_screen.dart';
 import 'presentation/screens/settings/accessibility_settings_screen.dart';
-import 'presentation/widgets/sentinela_alert_overlay.dart';
+import 'presentation/widgets/equipment_alert_overlay.dart';
 
 // 🔑 CHAVE GLOBAL PARA NAVEGAÇÃO
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -80,16 +75,16 @@ void main() async {
     const AndroidNotificationChannel highChannel = AndroidNotificationChannel(
       'high_importance_channel', // id
       'Notificações Importantes', // title
-      description: 'Canal para alertas urgentes da EVA.',
+      description: 'Canal para alertas urgentes do IronMind.',
       importance: Importance.max,
     );
 
-    // Canal 2: SENTINELA (FOREGROUND SERVICE)
+    // Canal 2: IRON SENTINEL (FOREGROUND SERVICE)
     const AndroidNotificationChannel sentinelaChannel =
         AndroidNotificationChannel(
-      'sentinela_channel', // id
-      'Sentinela EVA', // title
-      description: 'Monitoramento de segurança em tempo real.',
+      'iron_sentinel_channel', // id
+      'IronMind Sentinel', // title
+      description: 'Monitoramento de equipamento em tempo real.',
       importance: Importance
           .low, // Prioridade baixa para não incomodar mas manter ativo
     );
@@ -133,13 +128,11 @@ void main() async {
     final callProvider = await CallProvider.create();
     logger.i('✅ CallProvider criado e inicializado');
 
-    // ✅ Configurar callback APÓS inicialização
-    FirebaseService.onVoiceCallReceived = (sessionId, idosoData) {
+    // Configurar callback de chamada recebida
+    FirebaseService.onVoiceCallReceived = (sessionId, userData) {
       final logger = Logger();
-      logger.i('🎯 BACKEND triggered call! Session: $sessionId');
-      logger.i('📞 Updating CallProvider state to RINGING...');
-      callProvider.receiveCall(sessionId, idosoData: idosoData);
-      logger.i('✅ CallProvider updated. User must click ANSWER button.');
+      logger.i('[IronMind] Call received! Session: $sessionId');
+      callProvider.receiveCall(sessionId, idosoData: userData);
     };
 
     // 👂 INICIAR LISTENERS AGORA (Seguro, pois o callback está registrado)
@@ -150,19 +143,11 @@ void main() async {
     logger.i('📞 Starting CallKit Listeners...');
     CallKitService.listenEvents();
 
-    // ✅ INICIAR SENTINELA (Always-On Fall Detection)
-    logger.i('🛡️ Initializing Sentinela...');
-    await SentinelaService.initialize();
-
-    // Aguardar um pouco para garantir que os canais estão prontos antes do start
+    // Inicializar IronSentinel (monitoramento de equipamento em background)
+    logger.i('[IronMind] Initializing IronSentinel...');
+    await IronSentinelService.initialize();
     await Future.delayed(const Duration(seconds: 1));
-    await SentinelaService.start();
-    logger.i('✅ Sentinela ACTIVE - Fall detection monitoring started');
-
-    // ✅ TEMPORARIAMENTE DESABILITADO - INICIAR HEALTH SYNC WORKER (Sincronização periódica a cada 6h)
-    // logger.i('⏰ Initializing HealthSyncWorker...');
-    // await HealthSyncWorker.initialize();
-    // logger.i('✅ HealthSyncWorker ACTIVE - Periodic sync every 6 hours');
+    logger.i('[IronMind] IronSentinel configured (manual start via inspection)');
 
     runApp(MyApp(callProvider: callProvider));
   } catch (e, stackTrace) {
@@ -190,7 +175,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // ✅ FIX: Criar router UMA VEZ no initState para evitar recriação no build
-    String initialRoute = '/permissions';
+    String initialRoute = '/login';
     if (StorageService.isLoggedIn()) {
       initialRoute = '/home';
     }
@@ -212,30 +197,25 @@ class _MyAppState extends State<MyApp> {
       ],
       child: Consumer<AccessibilityProvider>(
         builder: (context, accessibility, child) {
-          return SentinelaAlertOverlay(
-            child: PopScope(
-              canPop: false,
-              onPopInvoked: (bool didPop) async {
-                if (!didPop) {
-                  // Minimiza o app em vez de fechar
-                  SystemNavigator.pop();
-                }
-              },
-              child: MediaQuery(
-              // Aplica escala de texto do provider
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (bool didPop) async {
+              if (!didPop) {
+                SystemNavigator.pop();
+              }
+            },
+            child: MediaQuery(
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(accessibility.effectiveTextScale),
                 boldText: accessibility.isBoldText,
               ),
               child: MaterialApp.router(
-                title: 'EVA - Assistente para Idosos',
-                // Tema dinamico baseado nas configuracoes de acessibilidade
+                title: 'IronMind - Inspeção Industrial',
                 theme: accessibility.getTheme(context),
                 darkTheme: accessibility.getDarkTheme(context),
-                themeMode: ThemeMode.light, // EVA usa tema claro com gradiente
+                themeMode: ThemeMode.dark,
                 routerConfig: _router,
                 debugShowCheckedModeBanner: false,
-                // ✅ Tradução para Calendário (Fix White Screen)
                 localizationsDelegates: const [
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
@@ -246,7 +226,6 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-          ),
           );
         },
       ),
@@ -258,11 +237,6 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey, // ✅ CHAVE GLOBAL ADICIONADA
       initialLocation: initialRoute,
       routes: [
-        GoRoute(
-          path: '/permissions',
-          name: 'permissions',
-          builder: (context, state) => const PermissionsScreen(),
-        ),
         GoRoute(
           path: '/setup',
           name: 'setup',
@@ -307,28 +281,6 @@ class _MyAppState extends State<MyApp> {
           path: '/splash',
           name: 'splash',
           builder: (context, state) => const SplashScreen(),
-        ),
-        GoRoute(
-          path: '/medicamentos',
-          name: 'medicamentos',
-          builder: (context, state) => const MedicamentosScreen(),
-        ),
-        GoRoute(
-          path: '/contatos-emergencia',
-          name: 'contatos-emergencia',
-          builder: (context, state) => const ContatosEmergenciaScreen(),
-        ),
-        GoRoute(
-          path: '/medication-scanner',
-          name: 'medication-scanner',
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-            return MedicationScannerScreen(
-              sessionId: extra?['sessionId'] ?? 'manual-scan-${DateTime.now().millisecondsSinceEpoch}',
-              candidateMedications: extra?['candidateMedications'] ?? [],
-              instructions: extra?['instructions'] ?? 'Aponte a camera para o medicamento',
-            );
-          },
         ),
         GoRoute(
           path: '/accessibility',

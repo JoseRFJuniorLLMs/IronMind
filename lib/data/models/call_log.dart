@@ -1,7 +1,7 @@
 class CallLog {
   final int? id;
   final String sessionId;
-  final int idosoId;
+  final int operatorId;
   final DateTime startTime;
   final DateTime endTime;
   final Duration duration;
@@ -11,7 +11,7 @@ class CallLog {
   CallLog({
     this.id,
     required this.sessionId,
-    required this.idosoId,
+    required this.operatorId,
     required this.startTime,
     required this.endTime,
     required this.duration,
@@ -23,7 +23,7 @@ class CallLog {
     return CallLog(
       id: json['id'],
       sessionId: json['session_id'],
-      idosoId: json['idoso_id'],
+      operatorId: json['operator_id'],
       startTime: DateTime.parse(json['start_time']),
       endTime: DateTime.parse(json['end_time']),
       duration: Duration(seconds: json['duration_seconds']),
@@ -36,7 +36,7 @@ class CallLog {
     return {
       'id': id,
       'session_id': sessionId,
-      'idoso_id': idosoId,
+      'operator_id': operatorId,
       'start_time': startTime.toIso8601String(),
       'end_time': endTime.toIso8601String(),
       'duration_seconds': duration.inSeconds,

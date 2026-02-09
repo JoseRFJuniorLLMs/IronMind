@@ -99,9 +99,9 @@ class DiagnosticService {
   Future<void> _checkStorage() async {
     _log('\n💾 STORAGE');
     try {
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       _log('CPF salvo: $cpf');
-      final idosoId = StorageService.getIdosoId();
+      final idosoId = StorageService.getOperatorId();
       _log('ID salvo: $idosoId');
     } catch (e) {
       _log('Erro Storage: $e');
@@ -124,7 +124,7 @@ class DiagnosticService {
 
   Future<void> _sendToDatabase() async {
     try {
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       String deviceInfo = 'Unknown';
       String appVersion = 'Unknown';
 

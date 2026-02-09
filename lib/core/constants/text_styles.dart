@@ -19,7 +19,7 @@ class AppTextStyles {
   // ============================================
 
   /// Titulo principal - 32dp bold
-  static const TextStyle elderlyTitle = TextStyle(
+  static const TextStyle accessibleTitle = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: Colors.white,
@@ -27,7 +27,7 @@ class AppTextStyles {
   );
 
   /// Subtitulo - 24dp semibold
-  static const TextStyle elderlySubtitle = TextStyle(
+  static const TextStyle accessibleSubtitle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: Colors.white,
@@ -35,55 +35,55 @@ class AppTextStyles {
   );
 
   /// Texto de corpo - 20dp
-  static const TextStyle elderlyBody = TextStyle(
+  static const TextStyle accessibleBody= TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w500,
     height: 1.5,
   );
 
   /// Texto de corpo grande - 22dp
-  static const TextStyle elderlyBodyLarge = TextStyle(
+  static const TextStyle accessibleBodyLarge = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.w500,
     height: 1.5,
   );
 
   /// Botao - 20dp bold
-  static const TextStyle elderlyButton = TextStyle(
+  static const TextStyle accessibleButton= TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     letterSpacing: 1,
   );
 
   /// Botao grande - 24dp bold
-  static const TextStyle elderlyButtonLarge = TextStyle(
+  static const TextStyle accessibleButtonLarge = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     letterSpacing: 2,
   );
 
   /// Label - 18dp medium
-  static const TextStyle elderlyLabel = TextStyle(
+  static const TextStyle accessibleLabel = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w500,
   );
 
   /// Caption - 16dp (nunca menor que 16 para idosos)
-  static const TextStyle elderlyCaption = TextStyle(
+  static const TextStyle accessibleCaption = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: Colors.grey,
   );
 
   /// Input hint - 20dp
-  static const TextStyle elderlyHint = TextStyle(
+  static const TextStyle accessibleHint = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w400,
     color: Colors.grey,
   );
 
   /// Numero grande (telefone, CPF) - 28dp
-  static const TextStyle elderlyNumber = TextStyle(
+  static const TextStyle accessibleNumber = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w500,
     letterSpacing: 2,

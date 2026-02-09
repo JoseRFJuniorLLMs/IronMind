@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Titulo
                     const Text(
                       'Bem-vindo',
-                      style: AppTextStyles.elderlyTitle,
+                      style: AppTextStyles.accessibleTitle,
                     ),
                     const SizedBox(height: 12),
                     Text(

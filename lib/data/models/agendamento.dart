@@ -1,6 +1,6 @@
 class Agendamento {
   final int id;
-  final int idosoId;
+  final int operatorId;
   final String tipo;
   final DateTime dataHoraAgendada;
   final DateTime? dataHoraRealizada;
@@ -12,7 +12,7 @@ class Agendamento {
 
   Agendamento({
     required this.id,
-    required this.idosoId,
+    required this.operatorId,
     required this.tipo,
     required this.dataHoraAgendada,
     this.dataHoraRealizada,
@@ -26,7 +26,7 @@ class Agendamento {
   factory Agendamento.fromJson(Map<String, dynamic> json) {
     return Agendamento(
       id: json['id'],
-      idosoId: json['idoso_id'],
+      operatorId: json['operator_id'],
       tipo: json['tipo'],
       dataHoraAgendada: DateTime.parse(json['data_hora_agendada']),
       dataHoraRealizada: json['data_hora_realizada'] != null
@@ -43,7 +43,7 @@ class Agendamento {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'idoso_id': idosoId,
+      'operator_id': operatorId,
       'tipo': tipo,
       'data_hora_agendada': dataHoraAgendada.toIso8601String(),
       'data_hora_realizada': dataHoraRealizada?.toIso8601String(),

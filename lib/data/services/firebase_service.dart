@@ -9,7 +9,7 @@ import '../../providers/call_provider.dart';
 import '../../main.dart'; // Para acessar navigatorKey
 import 'package:go_router/go_router.dart';
 import 'callkit_service.dart'; // ✅ CallKit Service
-import 'health_service.dart';
+
 
 // Callback global para notificações em background
 @pragma('vm:entry-point')
@@ -24,7 +24,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     // ✅ MOSTRAR TELA DE CHAMADA IMEDIATAMENTE (BACKGROUND)
     final sessionId = message.data['sessionId'];
-    final name = message.data['idosoNome'] ?? 'EVA';
+    final name = message.data['operatorNome'] ?? 'EVA';
 
     await CallKitService.showIncomingCall(
       uuid: sessionId,
@@ -56,7 +56,7 @@ class FirebaseService {
   static FirebaseMessaging? _messaging;
 
   // Callback para quando receber uma chamada de voz
-  static Function(String sessionId, Map<String, dynamic> idosoData)?
+  static Function(String sessionId, Map<String, dynamic> userData)?
       onVoiceCallReceived;
 
   static Future<void> initialize() async {
@@ -215,7 +215,7 @@ class FirebaseService {
   /// Sincroniza o token com o backend
   static Future<void> _syncTokenWithBackend(String token) async {
     try {
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
 
       if (cpf == null) {
         _logger.w('⚠️ No CPF found. Skipping token sync with backend.');
@@ -290,14 +290,14 @@ class FirebaseService {
 
         // Extract session data
         final sessionId = message.data['sessionId'];
-        Map<String, dynamic> idosoData = {};
-        if (message.data.containsKey('idosoId'))
-          idosoData['idosoId'] = message.data['idosoId'];
-        if (message.data.containsKey('idosoNome'))
-          idosoData['nome'] = message.data['idosoNome'];
+        Map<String, dynamic> userData = {};
+        if (message.data.containsKey('operatorId'))
+          userData['operatorId'] = message.data['operatorId'];
+        if (message.data.containsKey('operatorNome'))
+          userData['nome'] = message.data['operatorNome'];
 
         // Update provider state to show incoming call
-        provider.receiveCall(sessionId, idosoData: idosoData);
+        provider.receiveCall(sessionId, userData: userData);
 
         // Navigate to call screen automatically
         context.push('/call');
@@ -331,7 +331,7 @@ class FirebaseService {
         // 2. Aceitar a chamada (simulando clique no CallKit)
         // Precisamos garantir que os dados da sessão estejam setados
         final sessionId = message.data['sessionId'];
-        provider.receiveCall(sessionId, idosoData: {}); // Garante estado
+        provider.receiveCall(sessionId, userData: {}); // Garante estado
         provider.acceptCall();
       }
       return;
@@ -353,7 +353,7 @@ class FirebaseService {
           final provider = Provider.of<CallProvider>(context, listen: false);
           context.push('/call');
           final sessionId = message.data['sessionId'];
-          provider.receiveCall(sessionId, idosoData: {});
+          provider.receiveCall(sessionId, userData: {});
           provider.acceptCall();
         }
       });
@@ -398,21 +398,21 @@ class FirebaseService {
         _logger.i('📞 Voice call request received');
         _logger.i('Session ID: $sessionId');
 
-        // Extrair dados do idoso
-        Map<String, dynamic> idosoData = {};
+        // Extrair dados do operador
+        Map<String, dynamic> userData = {};
 
-        if (data.containsKey('idosoId')) idosoData['idosoId'] = data['idosoId'];
-        if (data.containsKey('idosoNome')) {
-          idosoData['nome'] = data['idosoNome'];
+        if (data.containsKey('operatorId')) userData['operatorId'] = data['operatorId'];
+        if (data.containsKey('operatorNome')) {
+          userData['nome'] = data['operatorNome'];
         }
         if (data.containsKey('tarefaTipo')) {
-          idosoData['tarefaTipo'] = data['tarefaTipo'];
+          userData['tarefaTipo'] = data['tarefaTipo'];
         }
         if (data.containsKey('prioridade')) {
-          idosoData['prioridade'] = data['prioridade'];
+          userData['prioridade'] = data['prioridade'];
         }
 
-        _logger.i('Idoso data: $idosoData');
+        _logger.i('Idoso data: $userData');
 
         // ✅ LÓGICA DE LINHA OCUPADA (BUSY LINE)
         // Verificar se já existe uma chamada ativa
@@ -461,7 +461,7 @@ class FirebaseService {
           _logger.i('🌑 Background/Terminated -> CallKit (Tela Nativa)');
           CallKitService.showIncomingCall(
             uuid: sessionId,
-            name: idosoData['nome'] ?? 'EVA',
+            name: userData['nome'] ?? 'EVA',
             avatar:
                 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png', // Avatar padrão
             handle: 'Assistente Virtual',
@@ -473,7 +473,7 @@ class FirebaseService {
         // Chamar callback para atualizar estado interno (sem tocar som extra se o CallKit já tocar)
         if (onVoiceCallReceived != null) {
           _logger.i('✅ Triggering call handler...');
-          onVoiceCallReceived!(sessionId, idosoData);
+          onVoiceCallReceived!(sessionId, userData);
         } else {
           _logger.w('⚠️ No call handler registered!');
         }

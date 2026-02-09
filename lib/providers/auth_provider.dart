@@ -3,8 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../data/services/api_service.dart';
 import '../data/services/storage_service.dart';
-import '../data/services/notification_service.dart';
-import '../data/models/idoso.dart';
+import '../data/models/operator.dart';
 
 enum AuthStatus {
   initial,
@@ -17,23 +16,21 @@ enum AuthStatus {
 class AuthProvider with ChangeNotifier {
   final Logger _logger = Logger();
   final ApiService _apiService = ApiService();
-  final NotificationService _notificationService = NotificationService();
 
   AuthStatus _status = AuthStatus.initial;
-  Idoso? _idoso;
+  Operator? _operator;
   String? _errorMessage;
   String? _fcmToken;
 
   AuthStatus get status => _status;
-  Idoso? get idoso => _idoso;
+  Operator? get operator_ => _operator;
   String? get errorMessage => _errorMessage;
   String? get fcmToken => _fcmToken;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
 
-  // Getters de conveniencia
-  int? get idosoId => _idoso?.id;
-  String? get idosoNome => _idoso?.nome;
-  String? get idosoCpf => _idoso?.cpf;
+  int? get operatorId => _operator?.id;
+  String? get operatorNome => _operator?.nome;
+  String? get operatorCpf => _operator?.cpf;
 
   /// Inicializa o provider verificando se ha sessao salva
   Future<void> initialize() async {
@@ -43,26 +40,21 @@ class AuthProvider with ChangeNotifier {
 
     try {
       // Verificar se ha dados salvos
-      final savedCpf = StorageService.getIdosoCpf();
-      final savedId = StorageService.getIdosoId();
+      final savedCpf = StorageService.getOperatorCpf();
+      final savedId = StorageService.getOperatorId();
 
       if (savedCpf != null && savedId != null) {
-        _logger.i('📋 Sessao encontrada: CPF=$savedCpf, ID=$savedId');
+        _logger.i('[Auth] Sessao encontrada: CPF=$savedCpf, ID=$savedId');
 
-        // Validar com o backend
-        final idosoData = await _apiService.getIdoso(savedId);
+        final operatorData = await _apiService.getOperator(savedId);
 
-        if (idosoData != null) {
-          _idoso = Idoso.fromJson(idosoData);
+        if (operatorData != null) {
+          _operator = Operator.fromJson(operatorData);
           _status = AuthStatus.authenticated;
 
-          // Sincronizar FCM token
           await _syncFcmToken();
 
-          // Inicializar notificacoes
-          await _notificationService.initialize();
-
-          _logger.i('✅ Sessao validada: ${_idoso?.nome}');
+          _logger.i('[Auth] Sessao validada: ${_operator?.nome}');
         } else {
           _logger.w('⚠️ Sessao invalida, limpando dados...');
           await _clearSession();
@@ -95,31 +87,25 @@ class AuthProvider with ChangeNotifier {
         throw Exception('CPF invalido. Digite 11 numeros.');
       }
 
-      // Buscar idoso pelo CPF
-      final idosoData = await _apiService.getIdosoByCpf(cpfClean);
+      final operatorData = await _apiService.getOperatorByCpf(cpfClean);
 
-      if (idosoData == null) {
+      if (operatorData == null) {
         throw Exception('CPF nao cadastrado. Entre em contato com o suporte.');
       }
 
-      // Salvar dados
-      _idoso = Idoso.fromJson(idosoData);
+      _operator = Operator.fromJson(operatorData);
 
-      await StorageService.saveIdosoData(
-        idosoId: _idoso!.id,
-        nome: _idoso!.nome,
+      await StorageService.saveOperatorData(
+        operatorId: _operator!.id,
+        nome: _operator!.nome,
         cpf: cpfClean,
-        telefone: _idoso!.telefone,
+        telefone: _operator!.telefone,
       );
 
-      // Sincronizar FCM token
       await _syncFcmToken();
 
-      // Inicializar notificacoes
-      await _notificationService.initialize();
-
       _status = AuthStatus.authenticated;
-      _logger.i('✅ Login bem-sucedido: ${_idoso?.nome}');
+      _logger.i('[Auth] Login bem-sucedido: ${_operator?.nome}');
 
       notifyListeners();
       return true;
@@ -137,11 +123,11 @@ class AuthProvider with ChangeNotifier {
     try {
       _fcmToken = await FirebaseMessaging.instance.getToken();
 
-      if (_fcmToken != null && _idoso?.cpf != null) {
+      if (_fcmToken != null && _operator?.cpf != null) {
         await StorageService.saveFcmToken(_fcmToken!);
 
         final success = await _apiService.syncTokenByCpf(
-          cpf: _idoso!.cpf!,
+          cpf: _operator!.cpf!,
           token: _fcmToken!,
         );
 
@@ -163,7 +149,7 @@ class AuthProvider with ChangeNotifier {
     await _clearSession();
 
     _status = AuthStatus.unauthenticated;
-    _idoso = null;
+    _operator = null;
     _fcmToken = null;
     _errorMessage = null;
 
@@ -171,25 +157,22 @@ class AuthProvider with ChangeNotifier {
     _logger.i('✅ Logout realizado');
   }
 
-  /// Limpa a sessao
   Future<void> _clearSession() async {
     await StorageService.clearAll();
-    await _notificationService.cancelarTodas();
   }
 
-  /// Atualiza dados do idoso
-  Future<bool> refreshIdosoData() async {
-    if (_idoso?.id == null) return false;
+  Future<bool> refreshOperatorData() async {
+    if (_operator?.id == null) return false;
 
     try {
-      final data = await _apiService.getIdoso(_idoso!.id);
+      final data = await _apiService.getOperator(_operator!.id);
       if (data != null) {
-        _idoso = Idoso.fromJson(data);
+        _operator = Operator.fromJson(data);
         notifyListeners();
         return true;
       }
     } catch (e) {
-      _logger.e('❌ Erro ao atualizar dados: $e');
+      _logger.e('[Auth] Erro ao atualizar dados: $e');
     }
     return false;
   }

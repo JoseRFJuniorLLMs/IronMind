@@ -15,14 +15,14 @@ class ApiService {
   String get audioUrl => AppConfig.apiAudioUrl;
 
   /// Busca idoso pelo CPF usando o endpoint específico
-  Future<Map<String, dynamic>?> getIdosoByCpf(String cpf) async {
+  Future<Map<String, dynamic>?> getOperatorByCpf(String cpf) async {
     try {
       _logger.i('🔍 Buscando idoso por CPF: $cpf');
 
       // Limpar CPF (remover pontos e traços)
       final cpfClean = cpf.replaceAll(RegExp(r'[^0-9]'), '');
 
-      final url = Uri.parse('$baseUrl/idosos/by-cpf/$cpfClean');
+      final url = Uri.parse('$baseUrl/operators/by-cpf/$cpfClean');
       _logger.i('📤 Request URL: $url');
 
       final response = await http.get(url).timeout(_defaultTimeout);
@@ -64,7 +64,7 @@ class ApiService {
     try {
       _logger.i('🔄 Sincronizando token para CPF: $cpf');
       final url = Uri.parse(
-        '$baseUrl/idosos/sync-token-by-cpf?cpf=$cpf&token=$token',
+        '$baseUrl/operators/sync-token-by-cpf?cpf=$cpf&token=$token',
       );
 
       _logger.i('📤 Request URL: $url');
@@ -91,10 +91,10 @@ class ApiService {
     }
   }
 
-  /// [DEPRECATED] Use getIdosoByCpf() e syncTokenByCpf() separadamente
+  /// [DEPRECATED] Use getOperatorByCpf() e syncTokenByCpf() separadamente
 
   /// Busca a lista completa de idosos
-  Future<List<Map<String, dynamic>>> listIdosos() async {
+  Future<List<Map<String, dynamic>>> listOperators() async {
     try {
       _logger.i('🔍 Buscando idosos em: $baseUrl/idosos');
       final response = await http
@@ -120,7 +120,7 @@ class ApiService {
     try {
       _logger.i('🔄 Sincronizando FCM token para CPF $cpf');
       final url = Uri.parse(
-        '$baseUrl/idosos/sync-token-by-cpf?cpf=$cpf&token=$token',
+        '$baseUrl/operators/sync-token-by-cpf?cpf=$cpf&token=$token',
       );
 
       final response = await http.patch(url, headers: {
@@ -142,11 +142,11 @@ class ApiService {
   }
 
   /// Obtém dados detalhados de um idoso
-  Future<Map<String, dynamic>?> getIdoso(int idosoId) async {
+  Future<Map<String, dynamic>?> getOperator(int operatorId) async {
     try {
-      _logger.i('🔍 Buscando dados do idoso: $idosoId');
+      _logger.i('🔍 Buscando dados do idoso: $operatorId');
       final response = await http
-          .get(Uri.parse('$baseUrl/idosos/$idosoId'))
+          .get(Uri.parse('$baseUrl/operators/$operatorId'))
           .timeout(_defaultTimeout);
 
       if (response.statusCode == 200) {
@@ -164,13 +164,13 @@ class ApiService {
   }
 
   /// Busca agendamentos pendentes
-  Future<List<Map<String, dynamic>>> getUpcomingSchedules(int idosoId) async {
+  Future<List<Map<String, dynamic>>> getUpcomingSchedules(int operatorId) async {
     try {
-      _logger.i('📅 Buscando agendamentos para idoso: $idosoId');
+      _logger.i('📅 Buscando agendamentos para idoso: $operatorId');
       final response = await http
           .get(
             Uri.parse(
-              '$baseUrl/agendamentos?idoso_id=$idosoId&status=agendado',
+              '$baseUrl/agendamentos?operator_id=$operatorId&status=agendado',
             ),
           )
           .timeout(_defaultTimeout);
@@ -190,12 +190,12 @@ class ApiService {
   }
 
   /// Lista todos os agendamentos de um idoso (qualquer status)
-  Future<List<Map<String, dynamic>>> listAgendamentos(int idosoId) async {
+  Future<List<Map<String, dynamic>>> listAgendamentos(int operatorId) async {
     try {
-      _logger.i('📅 Listando todos os agendamentos para idoso: $idosoId');
+      _logger.i('📅 Listando todos os agendamentos para idoso: $operatorId');
       final response = await http
           .get(
-            Uri.parse('$baseUrl/agendamentos?idoso_id=$idosoId'),
+            Uri.parse('$baseUrl/agendamentos?operator_id=$operatorId'),
           )
           .timeout(_defaultTimeout);
 
@@ -215,19 +215,19 @@ class ApiService {
 
   /// Cria um novo agendamento
   Future<Map<String, dynamic>?> createAgendamento({
-    required int idosoId,
+    required int operatorId,
     required DateTime dataHoraAgendada,
     String tipo = 'chamada_voz',
     String prioridade = 'normal',
     Map<String, dynamic>? dadosTarefa,
   }) async {
     try {
-      _logger.i('📅 Criando novo agendamento para idoso: $idosoId');
+      _logger.i('📅 Criando novo agendamento para idoso: $operatorId');
       _logger.i('📞 Tipo: $tipo | Prioridade: $prioridade');
       _logger.i('🕐 Data/Hora: ${dataHoraAgendada.toIso8601String()}');
 
       final body = {
-        'idoso_id': idosoId,
+        'operator_id': operatorId,
         'tipo': tipo,
         'data_hora_agendada': dataHoraAgendada.toIso8601String(),
         'prioridade': prioridade,
@@ -405,11 +405,11 @@ class ApiService {
   }
 
   /// Obter histórico de chamadas (Migrado do CallRepository)
-  Future<List<Map<String, dynamic>>> getCallHistory(int idosoId) async {
+  Future<List<Map<String, dynamic>>> getCallHistory(int operatorId) async {
     try {
-      _logger.i('📚 Fetching call history for idoso: $idosoId');
+      _logger.i('📚 Fetching call history for idoso: $operatorId');
 
-      final url = Uri.parse('$audioUrl/call-logs?idoso_id=$idosoId');
+      final url = Uri.parse('$audioUrl/call-logs?operator_id=$operatorId');
       final response = await http.get(url).timeout(_defaultTimeout);
 
       if (response.statusCode == 200) {
@@ -459,7 +459,7 @@ class ApiService {
   /// Salva o histórico da chamada
   Future<bool> saveCallLog({
     required String sessionId,
-    required int idosoId,
+    required int operatorId,
     required DateTime startTime,
     required DateTime endTime,
     required Duration duration,
@@ -475,7 +475,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'session_id': sessionId,
-          'idoso_id': idosoId,
+          'operator_id': operatorId,
           'start_time': startTime.toIso8601String(),
           'end_time': endTime.toIso8601String(),
           'duration_seconds': duration.inSeconds,
@@ -562,15 +562,15 @@ class ApiService {
   }
 
   /// Inicia uma vídeo chamada
-  Future<Map<String, dynamic>> startVideoCall(int idosoId) async {
+  Future<Map<String, dynamic>> startVideoCall(int operatorId) async {
     try {
-      _logger.i('📞 Iniciando vídeo chamada para idoso ID: $idosoId');
+      _logger.i('📞 Iniciando vídeo chamada para idoso ID: $operatorId');
 
       final response = await http
           .post(
             Uri.parse('$baseUrl/video-calls/start'),
             headers: {'Content-Type': 'application/json'},
-            body: json.encode({'idoso_id': idosoId}),
+            body: json.encode({'operator_id': operatorId}),
           )
           .timeout(const Duration(seconds: 10));
 
@@ -638,7 +638,7 @@ class ApiService {
   /// - glicose_sangue: glicemia
   /// - frequencia_respiratoria: freq. respiratória
   Future<bool> sendVitalSigns({
-    required int idosoId,
+    required int operatorId,
     required List<Map<String, dynamic>> vitalSigns,
   }) async {
     lastVitalSignsError = null;
@@ -648,13 +648,13 @@ class ApiService {
         '⌚ Enviando ${vitalSigns.length} sinais vitais para backend...',
       );
       _logger.i('📡 URL: $baseUrl/saude/sinais-vitais/bulk');
-      _logger.i('👤 Cliente ID: $idosoId');
+      _logger.i('👤 Cliente ID: $operatorId');
 
       // Endpoint correto: /api/v1/saude/sinais-vitais/bulk
       final url = Uri.parse('$baseUrl/saude/sinais-vitais/bulk');
 
       // Agrupa sinais vitais por timestamp para enviar em um único registro
-      final registros = _groupVitalSignsByTimestamp(idosoId, vitalSigns);
+      final registros = _groupVitalSignsByTimestamp(operatorId, vitalSigns);
 
       final body = jsonEncode({'registros': registros});
 
@@ -848,11 +848,11 @@ class ApiService {
   // =====================================================================
 
   /// Lista medicamentos de um idoso
-  Future<Map<String, dynamic>> getMedicamentos(int idosoId) async {
+  Future<Map<String, dynamic>> getMedicamentos(int operatorId) async {
     try {
-      _logger.i('💊 Buscando medicamentos para idoso: $idosoId');
+      _logger.i('💊 Buscando medicamentos para idoso: $operatorId');
       final response = await http
-          .get(Uri.parse('$baseUrl/medicamentos?idoso_id=$idosoId'))
+          .get(Uri.parse('$baseUrl/medicamentos?operator_id=$operatorId'))
           .timeout(_defaultTimeout);
 
       if (response.statusCode == 200) {
@@ -955,11 +955,11 @@ class ApiService {
   // =====================================================================
 
   /// Lista contatos de emergencia de um idoso
-  Future<Map<String, dynamic>> getContatosEmergencia(int idosoId) async {
+  Future<Map<String, dynamic>> getContatosEmergencia(int operatorId) async {
     try {
-      _logger.i('📞 Buscando contatos de emergencia para idoso: $idosoId');
+      _logger.i('📞 Buscando contatos de emergencia para idoso: $operatorId');
       final response = await http
-          .get(Uri.parse('$baseUrl/contatos-emergencia?idoso_id=$idosoId'))
+          .get(Uri.parse('$baseUrl/contatos-emergencia?operator_id=$operatorId'))
           .timeout(_defaultTimeout);
 
       if (response.statusCode == 200) {

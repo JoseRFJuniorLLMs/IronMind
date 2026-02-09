@@ -72,7 +72,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     });
 
     try {
-      final idosoId = StorageService.getIdosoId();
+      final idosoId = StorageService.getOperatorId();
 
       if (idosoId == null) {
         throw Exception('ID do idoso não encontrado');
@@ -1182,7 +1182,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     });
 
     try {
-      final idosoId = StorageService.getIdosoId();
+      final idosoId = StorageService.getOperatorId();
 
       if (idosoId == null) {
         throw Exception('ID do idoso não encontrado. Faça login novamente.');

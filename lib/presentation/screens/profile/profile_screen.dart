@@ -13,7 +13,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     // ✅ Buscar dados reais do storage
-    final nome = StorageService.getIdosoNome() ?? 'Usuário';
+    final nome = StorageService.getOperatorNome() ?? 'Usuário';
     final cpf = StorageService.getIdosoCpf() ?? 'Não disponível';
     final telefone = StorageService.getIdosoTelefone() ?? 'Não disponível';
     final id = StorageService.getIdosoId()?.toString() ?? 'N/A';
