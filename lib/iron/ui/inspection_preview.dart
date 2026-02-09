@@ -232,8 +232,8 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
             ),
           ),
 
-          // Layer 6: Diagnóstico Moondream (se disponível)
-          if (_lastResult?.diagnosis != null)
+          // Layer 6: Diagnóstico Gemini Spatial (se disponível)
+          if (_lastResult?.spatialAnalysis != null)
             Positioned(
               bottom: 100,
               left: 16,
@@ -250,7 +250,7 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'DIAGNÓSTICO NPU',
+                      'GEMINI SPATIAL',
                       style: TextStyle(
                         color: Colors.orange,
                         fontSize: 11,
@@ -260,7 +260,7 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _lastResult!.diagnosis!.description,
+                      _lastResult!.spatialAnalysis!.ttsResume,
                       style:
                           const TextStyle(color: Colors.white, fontSize: 13),
                       maxLines: 3,
@@ -268,8 +268,9 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${_lastResult!.diagnosis!.latencyMs}ms | '
-                      '${(_lastResult!.diagnosis!.confidence * 100).toInt()}%',
+                      '${_lastResult!.spatialAnalysis!.latencyMs}ms | '
+                      '${_lastResult!.spatialAnalysis!.componentCount} componentes | '
+                      '${_lastResult!.spatialAnalysis!.anomalyCount} anomalias',
                       style: const TextStyle(
                           color: Colors.white54, fontSize: 10),
                     ),
@@ -326,9 +327,9 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
   }
 
   Future<void> _forceDiagnosis() async {
-    // Força Moondream mesmo sem detecção automática
+    // Força Gemini Spatial mesmo sem detecção automática
     debugPrint('[Preview] Diagnóstico forçado solicitado');
-    // TODO: Capturar frame atual e enviar para Moondream
+    // TODO: Capturar frame atual e enviar para Gemini Spatial
   }
 
   Future<void> _startVoiceNote() async {

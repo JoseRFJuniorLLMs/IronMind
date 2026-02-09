@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../detection/yolo_engine.dart';
 import '../segmentation/edgesam_segmenter.dart';
-import '../diagnosis/moondream_vlm.dart';
-import '../voice/yamnet_classifier.dart';
+import '../diagnosis/gemini_spatial_engine.dart';
 import '../voice/eva_voice_controller.dart';
 import 'model_manager.dart';
 import 'uncertainty_analyzer.dart';
@@ -13,8 +11,7 @@ import 'uncertainty_analyzer.dart';
 class InspectionResult {
   final List<Detection> detections;
   final SegmentationMask? segmentationMask;
-  final DiagnosticResult? diagnosis;
-  final AudioEvent? audioEvent;
+  final SpatialAnalysisResult? spatialAnalysis;
   final double frameUrgency;
   final Duration inferenceTime;
   final String modelUsed;
@@ -22,8 +19,7 @@ class InspectionResult {
   InspectionResult({
     required this.detections,
     this.segmentationMask,
-    this.diagnosis,
-    this.audioEvent,
+    this.spatialAnalysis,
     required this.frameUrgency,
     required this.inferenceTime,
     required this.modelUsed,
@@ -31,35 +27,49 @@ class InspectionResult {
 
   bool get hasDefects => detections.any((d) => d.isDefect);
   int get defectCount => detections.where((d) => d.isDefect).length;
+  bool get hasSpatialAnalysis => spatialAnalysis != null && spatialAnalysis!.components.isNotEmpty;
 }
 
-/// Pipeline principal de inspeção: Camera → YOLO → EdgeSAM → Moondream → TTS
+/// Pipeline principal de inspeção: Camera → YOLO → EdgeSAM → Gemini Spatial → TTS
 /// Orquestra todos os modelos com decisões baseadas em incerteza
 class InspectionOrchestrator {
   final ModelManager modelManager;
   final UncertaintyAnalyzer uncertainty;
+  final GeminiSpatialEngine gemini;
   final EVAVoiceController? voiceController;
 
   // Estado
   bool _isRunning = false;
   int _frameCount = 0;
   int _defectsFound = 0;
+  int _geminiCalls = 0;
   DateTime? _sessionStart;
+  String _equipmentType = 'equipamento pesado';
 
   // Callbacks
   void Function(InspectionResult)? onResult;
   void Function(String)? onAlert;
+  void Function(SpatialAnalysisResult)? onSpatialResult;
 
   InspectionOrchestrator({
     ModelManager? modelManager,
     UncertaintyAnalyzer? uncertainty,
+    GeminiSpatialEngine? gemini,
     this.voiceController,
   })  : modelManager = modelManager ?? ModelManager(),
-        uncertainty = uncertainty ?? UncertaintyAnalyzer();
+        uncertainty = uncertainty ?? UncertaintyAnalyzer(),
+        gemini = gemini ?? GeminiSpatialEngine();
 
   bool get isRunning => _isRunning;
   int get frameCount => _frameCount;
   int get defectsFound => _defectsFound;
+  int get geminiCalls => _geminiCalls;
+
+  /// Define tipo de equipamento para contexto do Gemini
+  void setEquipmentType(String type) {
+    _equipmentType = type;
+    debugPrint('[Orchestrator] Equipment type: $type');
+  }
 
   /// Inicializa o pipeline (carrega modelos warm)
   Future<void> initialize() async {
@@ -81,7 +91,7 @@ class InspectionOrchestrator {
     final urgency = uncertainty.frameUrgency(detections);
 
     SegmentationMask? mask;
-    DiagnosticResult? diagnosis;
+    SpatialAnalysisResult? spatialResult;
 
     // ─── STAGE 2: Segmentação EdgeSAM (se defeito detectado) ───
     final defects = detections.where((d) => d.isDefect).toList();
@@ -100,40 +110,48 @@ class InspectionOrchestrator {
           mask = await modelManager.edgeSAM.segment(
             imageBytes,
             center,
-            const Size(640, 640), // Normalizado pelo preview
+            const Size(640, 640),
           );
         }
       } catch (e) {
         debugPrint('[Orchestrator] EdgeSAM falhou: $e');
       }
 
-      // ─── STAGE 3: Diagnóstico Moondream (se incerteza média) ───
-      final needsDiagnosis = decisions.entries.any(
-        (e) => e.value == AnalysisDecision.moondreamAnalysis,
+      // ─── STAGE 3: Gemini Spatial (se incerteza média/baixa) ───
+      final needsGeminiQuick = decisions.entries.any(
+        (e) => e.value == AnalysisDecision.geminiQuick,
+      );
+      final needsGeminiDeep = decisions.entries.any(
+        (e) => e.value == AnalysisDecision.geminiDeep,
       );
 
-      if (needsDiagnosis) {
+      if ((needsGeminiQuick || needsGeminiDeep) && gemini.isConfigured) {
         try {
-          await modelManager.ensureMoondream();
-          if (modelManager.moondream.isLoaded) {
-            final prompt = MoondreamDiagnostic.diagnosticPrompts[
-                    topDefect.className] ??
-                'Descreva o defeito visível nesta peça mecânica.';
-            diagnosis = await modelManager.moondream.diagnose(
-              imageBytes,
-              prompt,
-            );
-          }
+          final budget = needsGeminiDeep ? 'large' : 'small';
+          spatialResult = await gemini.analyze(
+            imageBytes: imageBytes,
+            detections: detections,
+            equipmentType: _equipmentType,
+            thinkingBudget: budget,
+          );
+          _geminiCalls++;
+          onSpatialResult?.call(spatialResult);
+
+          debugPrint('[Orchestrator] Gemini ($budget): '
+              '${spatialResult.componentCount} componentes, '
+              '${spatialResult.anomalyCount} anomalias, '
+              '${spatialResult.latencyMs}ms');
         } catch (e) {
-          debugPrint('[Orchestrator] Moondream falhou: $e');
+          debugPrint('[Orchestrator] Gemini falhou: $e');
         }
       }
 
       // ─── STAGE 4: Alerta por voz (se urgência alta) ───
       if (uncertainty.shouldAlert(detections) && voiceController != null) {
-        final alertMsg = _buildAlertMessage(topDefect, diagnosis);
+        final alertMsg = spatialResult != null && spatialResult.anomalies.isNotEmpty
+            ? spatialResult.ttsResume
+            : _buildAlertMessage(topDefect);
         onAlert?.call(alertMsg);
-        // TTS não bloqueia o pipeline
         voiceController!.speak(alertMsg);
       }
     }
@@ -143,7 +161,7 @@ class InspectionOrchestrator {
     final result = InspectionResult(
       detections: detections,
       segmentationMask: mask,
-      diagnosis: diagnosis,
+      spatialAnalysis: spatialResult,
       frameUrgency: urgency,
       inferenceTime: stopwatch.elapsed,
       modelUsed: modelManager.yoloEngine.currentModelName,
@@ -154,15 +172,9 @@ class InspectionOrchestrator {
   }
 
   /// Constrói mensagem de alerta para TTS
-  String _buildAlertMessage(Detection defect, DiagnosticResult? diagnosis) {
+  String _buildAlertMessage(Detection defect) {
     final className = defect.className.replaceAll('_', ' ');
     final confidence = (defect.confidence * 100).toInt();
-
-    if (diagnosis != null) {
-      return 'Atenção! $className detectado com $confidence por cento de confiança. '
-          '${diagnosis.description}';
-    }
-
     return 'Atenção! $className detectado com $confidence por cento de confiança.';
   }
 
@@ -180,6 +192,7 @@ class InspectionOrchestrator {
     return {
       'frames_processados': _frameCount,
       'defeitos_encontrados': _defectsFound,
+      'gemini_chamadas': _geminiCalls,
       'duracao_minutos': duration.inMinutes,
       'modelo_ativo': modelManager.yoloEngine.currentModelName,
       'ram_estimada_mb': modelManager.estimatedRAMUsage,

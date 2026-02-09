@@ -8,8 +8,8 @@ export 'detection/yolo_engine.dart';
 // Segmentation (EdgeSAM)
 export 'segmentation/edgesam_segmenter.dart';
 
-// Diagnosis (Moondream VLM)
-export 'diagnosis/moondream_vlm.dart';
+// Diagnosis (Gemini Spatial Engine)
+export 'diagnosis/gemini_spatial_engine.dart';
 
 // Voice (EVA + YAMNet)
 export 'voice/eva_voice_controller.dart';

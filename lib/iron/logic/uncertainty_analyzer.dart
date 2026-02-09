@@ -2,16 +2,16 @@ import 'dart:math';
 import '../detection/yolo_engine.dart';
 
 /// Analisa incerteza das detecções usando entropia de Shannon
-/// Decide se precisa de análise adicional (EdgeSAM, Moondream, Cloud)
+/// Decide se precisa de análise adicional (EdgeSAM, Gemini Spatial)
 enum AnalysisDecision {
   /// Confiança alta (>0.90) - aceitar direto
   accept,
 
-  /// Confiança média (0.75-0.90) - Moondream analisa
-  moondreamAnalysis,
+  /// Confiança média (0.75-0.90) - Gemini análise espacial rápida (small budget)
+  geminiQuick,
 
-  /// Confiança baixa (0.50-0.75) - Cloud fallback se online
-  cloudFallback,
+  /// Confiança baixa (0.50-0.75) - Gemini análise profunda (medium/large budget)
+  geminiDeep,
 
   /// Confiança muito baixa (<0.50) - descartar
   discard,
@@ -59,8 +59,8 @@ class UncertaintyAnalyzer {
     final conf = detection.confidence;
 
     if (conf >= highConfidence) return AnalysisDecision.accept;
-    if (conf >= mediumConfidence) return AnalysisDecision.moondreamAnalysis;
-    if (conf >= lowConfidence) return AnalysisDecision.cloudFallback;
+    if (conf >= mediumConfidence) return AnalysisDecision.geminiQuick;
+    if (conf >= lowConfidence) return AnalysisDecision.geminiDeep;
     return AnalysisDecision.discard;
   }
 

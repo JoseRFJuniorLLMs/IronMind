@@ -59,7 +59,7 @@ class DefectRecord {
   final String className;
   final double confidence;
   final String severity; // leve, medio, grave, critico
-  final String? diagnosis; // Descrição do Moondream
+  final String? diagnosis; // Descrição do Gemini Spatial
   final String? imagePath; // Path local do crop
   final double? maskArea; // Área da máscara EdgeSAM (%)
   final double bboxLeft;

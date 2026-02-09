@@ -1,5 +1,4 @@
 import 'dart:async';
-import '../diagnosis/moondream_vlm.dart';
 
 /// Comandos de voz suportados
 enum VoiceCommand {
@@ -45,8 +44,6 @@ class DailyStats {
 /// - Piper TTS pt-BR (15MB) para respostas faladas
 /// - 16+ comandos de voz em português
 class EVAVoiceController {
-  final MoondreamDiagnostic _moondream;
-
   // Serviços de voz (do EVA-Mobile)
   // late NativeAudioService _audioService;
   // late WhisperSTT _stt;
@@ -114,7 +111,7 @@ class EVAVoiceController {
   Function()? onOpenSettings;
   Function()? onSync;
 
-  EVAVoiceController(this._moondream);
+  EVAVoiceController();
 
   bool get isListening => _isListening;
 
@@ -215,7 +212,7 @@ class EVAVoiceController {
 
       case VoiceCommand.explain:
         await speak('Analisando. Aguarde.');
-        // TODO: Buscar última inspeção e usar Moondream
+        // TODO: Buscar última inspeção e usar Gemini Spatial
         break;
 
       case VoiceCommand.sync:
