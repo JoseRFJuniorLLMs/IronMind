@@ -1,6 +1,6 @@
 {
-    "name": "eva_mobile",
-    "short_name": "eva_mobile",
+    "name": "IronMind",
+    "short_name": "IronMind",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

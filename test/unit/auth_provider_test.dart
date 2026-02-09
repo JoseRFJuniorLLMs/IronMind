@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:eva_mobile/providers/auth_provider.dart';
+import 'package:ironmind/providers/auth_provider.dart';
 
 /// Unit tests for AuthProvider
 /// Focus: State management, status transitions, error handling
@@ -13,7 +13,7 @@ void main() {
   group('AuthProvider - Initial State', () {
     test('Should start with initial status', () {
       expect(authProvider.status, AuthStatus.initial);
-      expect(authProvider.idoso, null);
+      expect(authProvider.operator, null);
       expect(authProvider.errorMessage, null);
       expect(authProvider.isAuthenticated, false);
     });
@@ -23,9 +23,9 @@ void main() {
     });
 
     test('Should have null convenience getters initially', () {
-      expect(authProvider.idosoId, null);
-      expect(authProvider.idosoNome, null);
-      expect(authProvider.idosoCpf, null);
+      expect(authProvider.operatorId, null);
+      expect(authProvider.operatorNome, null);
+      expect(authProvider.operatorCpf, null);
     });
   });
 
@@ -97,7 +97,7 @@ void main() {
       await authProvider.logout();
 
       expect(authProvider.status, AuthStatus.unauthenticated);
-      expect(authProvider.idoso, null);
+      expect(authProvider.operator, null);
       expect(authProvider.fcmToken, null);
       expect(authProvider.errorMessage, null);
       expect(authProvider.isAuthenticated, false);
@@ -106,7 +106,7 @@ void main() {
 
   group('AuthProvider - Refresh', () {
     test('Should return false when not authenticated', () async {
-      final success = await authProvider.refreshIdosoData();
+      final success = await authProvider.refreshOperatorData();
 
       expect(success, false);
     });

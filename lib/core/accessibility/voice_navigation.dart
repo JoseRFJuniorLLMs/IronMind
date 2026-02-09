@@ -149,16 +149,15 @@ class VoiceNavigationService {
       _context!.push('/schedule');
       commandExecuted = true;
     }
-    // === MEDICATION COMMANDS ===
-    else if (_matchCommand(cleanCommand, ['remédio', 'medicamento', 'pílula', 'medicação'])) {
-      await _speak('Mostrando seus medicamentos.');
-      // TODO: Navigate to medication screen when created
-      _logger.i('TODO: Navigate to /medications');
+    // === INSPECTION HISTORY COMMANDS ===
+    else if (_matchCommand(cleanCommand, ['histórico', 'inspeções', 'relatório', 'resultados'])) {
+      await _speak('Abrindo histórico de inspeções.');
+      _logger.i('TODO: Navigate to /inspection-history');
       commandExecuted = true;
     }
     // === EMERGENCY COMMANDS ===
     else if (_matchCommand(cleanCommand, ['emergência', 'socorro', 'ajuda', 'sos'])) {
-      await _speak('Ativando emergência! Ligando para sua família.');
+      await _speak('Ativando protocolo de emergência.');
       // TODO: Activate emergency protocol
       _logger.i('TODO: Activate emergency protocol');
       commandExecuted = true;

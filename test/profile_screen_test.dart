@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:eva_mobile/presentation/screens/profile/profile_screen.dart';
+import 'package:ironmind/presentation/screens/profile/profile_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:eva_mobile/providers/auth_provider.dart';
+import 'package:ironmind/providers/auth_provider.dart';
 
 
 void main() {

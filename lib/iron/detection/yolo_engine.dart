@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:math';
 import 'dart:io';
+import 'dart:ui';
 
 /// Resultado de uma detecção individual
 class Detection {
@@ -59,7 +60,7 @@ class YoloInferenceEngine {
 
   final List<String> classNames;
 
-  YoloInferenceEngine({required this.classNames});
+  YoloInferenceEngine({this.classNames = const []});
 
   bool get isInitialized => _isInitialized;
   bool get isLoaded => _isInitialized;

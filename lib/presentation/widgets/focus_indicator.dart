@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 /// - Screen readers with keyboard
 ///
 /// WCAG 2.1 Success Criterion 2.4.7 (Level AA): Focus Visible
-class FocusIndicator extends StatelessWidget {
+class FocusIndicator extends StatefulWidget {
   final Widget child;
   final FocusNode? focusNode;
   final Color focusColor;
@@ -20,44 +20,67 @@ class FocusIndicator extends StatelessWidget {
     super.key,
     required this.child,
     this.focusNode,
-    this.focusColor = const Color(0xFF00BFFF), // Bright blue (high contrast)
+    this.focusColor = const Color(0xFF00BFFF),
     this.borderWidth = 3.0,
     this.borderRadius = 8.0,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final node = focusNode ?? FocusNode();
+  State<FocusIndicator> createState() => _FocusIndicatorState();
+}
 
-    return Focus(
-      focusNode: node,
-      child: AnimatedBuilder(
-        animation: node,
-        builder: (context, child) {
-          return Container(
-            decoration: node.hasFocus
-                ? BoxDecoration(
-                    border: Border.all(
-                      color: focusColor,
-                      width: borderWidth,
+class _FocusIndicatorState extends State<FocusIndicator> {
+  FocusNode? _internalNode;
+
+  FocusNode get _effectiveNode =>
+      widget.focusNode ?? (_internalNode ??= FocusNode());
+
+  @override
+  void dispose() {
+    _internalNode?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final node = _effectiveNode;
+
+    Widget content = AnimatedBuilder(
+      animation: node,
+      builder: (context, child) {
+        return Container(
+          decoration: node.hasFocus
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: widget.focusColor,
+                    width: widget.borderWidth,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(widget.borderRadius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: widget.focusColor.withValues(alpha: 0.5),
+                      blurRadius: 8,
+                      spreadRadius: 2,
                     ),
-                    borderRadius: BorderRadius.circular(borderRadius),
-                    // Optional glow effect
-                    boxShadow: [
-                      BoxShadow(
-                        color: focusColor.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  )
-                : null,
-            child: child,
-          );
-        },
-        child: child,
-      ),
+                  ],
+                )
+              : null,
+          child: child,
+        );
+      },
+      child: widget.child,
     );
+
+    // Only wrap with Focus if we own the node (no external focusNode)
+    if (widget.focusNode == null) {
+      content = Focus(
+        focusNode: node,
+        child: content,
+      );
+    }
+
+    return content;
   }
 }
 
@@ -86,6 +109,7 @@ class FocusableButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Button manages its own focus; FocusIndicator only observes
     final button = ElevatedButton(
       onPressed: onPressed,
       focusNode: focusNode,
@@ -93,12 +117,16 @@ class FocusableButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         padding: padding ?? const EdgeInsets.all(16),
-        minimumSize: const Size(64, 64), // Elderly-friendly size
+        minimumSize: const Size(64, 64), // Operator-friendly touch target
       ),
       child: child,
     );
 
-    // Wrap with semantics if provided
+    final indicator = FocusIndicator(
+      focusNode: focusNode,
+      child: button,
+    );
+
     if (semanticLabel != null) {
       return Semantics(
         button: true,
@@ -106,17 +134,11 @@ class FocusableButton extends StatelessWidget {
         hint: semanticHint,
         enabled: onPressed != null,
         excludeSemantics: true,
-        child: FocusIndicator(
-          focusNode: focusNode,
-          child: button,
-        ),
+        child: indicator,
       );
     }
 
-    return FocusIndicator(
-      focusNode: focusNode,
-      child: button,
-    );
+    return indicator;
   }
 }
 
@@ -153,7 +175,11 @@ class FocusableIconButton extends StatelessWidget {
       ),
     );
 
-    // Wrap with semantics if provided
+    final indicator = FocusIndicator(
+      focusNode: focusNode,
+      child: iconButton,
+    );
+
     if (semanticLabel != null) {
       return Semantics(
         button: true,
@@ -161,22 +187,16 @@ class FocusableIconButton extends StatelessWidget {
         hint: semanticHint,
         enabled: onPressed != null,
         excludeSemantics: true,
-        child: FocusIndicator(
-          focusNode: focusNode,
-          child: iconButton,
-        ),
+        child: indicator,
       );
     }
 
-    return FocusIndicator(
-      focusNode: focusNode,
-      child: iconButton,
-    );
+    return indicator;
   }
 }
 
 /// Focusable text field with visible focus indicator
-class FocusableTextField extends StatelessWidget {
+class FocusableTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? labelText;
   final String? hintText;
@@ -201,57 +221,70 @@ class FocusableTextField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final node = focusNode ?? FocusNode();
+  State<FocusableTextField> createState() => _FocusableTextFieldState();
+}
 
-    return Focus(
-      focusNode: node,
-      child: AnimatedBuilder(
-        animation: node,
-        builder: (context, child) {
-          return Semantics(
-            label: semanticLabel ?? labelText,
-            textField: true,
-            child: TextField(
-              controller: controller,
-              focusNode: node,
-              keyboardType: keyboardType,
-              obscureText: obscureText,
-              onChanged: onChanged,
-              onEditingComplete: onEditingComplete,
-              style: const TextStyle(fontSize: 18), // Larger for field readability
-              decoration: InputDecoration(
-                labelText: labelText,
-                hintText: hintText,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: node.hasFocus
-                        ? const Color(0xFF00BFFF) // Bright blue when focused
-                        : Colors.grey,
-                    width: node.hasFocus ? 3.0 : 1.0,
-                  ),
+class _FocusableTextFieldState extends State<FocusableTextField> {
+  FocusNode? _internalNode;
+
+  FocusNode get _effectiveNode =>
+      widget.focusNode ?? (_internalNode ??= FocusNode());
+
+  @override
+  void dispose() {
+    _internalNode?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final node = _effectiveNode;
+
+    return AnimatedBuilder(
+      animation: node,
+      builder: (context, child) {
+        return Semantics(
+          label: widget.semanticLabel ?? widget.labelText,
+          textField: true,
+          child: TextField(
+            controller: widget.controller,
+            focusNode: node,
+            keyboardType: widget.keyboardType,
+            obscureText: widget.obscureText,
+            onChanged: widget.onChanged,
+            onEditingComplete: widget.onEditingComplete,
+            style: const TextStyle(fontSize: 18),
+            decoration: InputDecoration(
+              labelText: widget.labelText,
+              hintText: widget.hintText,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: node.hasFocus
+                      ? const Color(0xFF00BFFF)
+                      : Colors.grey,
+                  width: node.hasFocus ? 3.0 : 1.0,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Colors.grey,
-                    width: 1.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF00BFFF), // Bright blue
-                    width: 3.0, // Thick border
-                  ),
-                ),
-                contentPadding: const EdgeInsets.all(16), // Large padding
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Colors.grey,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Color(0xFF00BFFF),
+                  width: 3.0,
+                ),
+              ),
+              contentPadding: const EdgeInsets.all(16),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -280,18 +313,18 @@ class FocusTraversalOrderWidget extends StatelessWidget {
 /// Focus scope widget for grouping focusable elements
 class FocusScopeWidget extends StatelessWidget {
   final List<Widget> children;
-  final FocusNode? focusNode;
+  final FocusScopeNode? node;
 
   const FocusScopeWidget({
     super.key,
     required this.children,
-    this.focusNode,
+    this.node,
   });
 
   @override
   Widget build(BuildContext context) {
     return FocusScope(
-      node: focusNode != null ? FocusScopeNode() : null,
+      node: node,
       child: Column(
         children: children,
       ),

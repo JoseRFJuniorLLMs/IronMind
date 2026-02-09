@@ -1,7 +1,7 @@
 # IronMind - Thresholds de Confiança
 detection:
   high_confidence: 0.90      # Retorno imediato, sem análise extra
-  medium_confidence: 0.75    # Moondream analisa
+  medium_confidence: 0.75    # Gemini Spatial analisa
   low_confidence: 0.50       # Cloud fallback (se disponível)
   minimum_display: 0.60      # Mínimo para mostrar no overlay
 
@@ -10,7 +10,7 @@ segmentation:
   iou_threshold: 0.50        # Threshold da máscara
 
 diagnosis:
-  moondream_trigger: 0.75    # Confiança abaixo disso = Moondream
+  gemini_trigger: 0.75    # Confiança abaixo disso = Gemini Spatial
   cloud_trigger: 0.50        # Confiança abaixo disso = Cloud
 
 audio:
@@ -22,5 +22,5 @@ battery:
   critical_mode: 10          # <10% = só YOLOv8n (mais leve)
 
 memory:
-  moondream_unload_seconds: 30   # Descarrega após 30s inativo
+  gemini_timeout_seconds: 30   # Descarrega após 30s inativo
   edgesam_unload_seconds: 10     # Descarrega após 10s sem detecção

@@ -8,7 +8,7 @@ commands:
     diagnosticar:
       aliases: ["diagnosticar", "analisar", "verificar"]
       action: diagnose
-      description: "EdgeSAM + Moondream no componente detectado"
+      description: "EdgeSAM + Gemini Spatial no componente detectado"
     capturar:
       aliases: ["capturar", "foto", "fotografar"]
       action: capture
@@ -16,7 +16,7 @@ commands:
     o_que_e_isso:
       aliases: ["o que é isso", "que peça é essa", "identificar"]
       action: identify
-      description: "Moondream descreve o que vê"
+      description: "Gemini Spatial descreve o que vê"
     esta_bom:
       aliases: ["está bom", "tá bom", "ok"]
       action: check_confidence
@@ -60,7 +60,7 @@ commands:
     explicar:
       aliases: ["explicar", "por quê", "por que"]
       action: explain
-      description: "Moondream re-explica último diagnóstico"
+      description: "Gemini Spatial re-explica último diagnóstico"
     enviar:
       aliases: ["enviar dados", "sincronizar", "sync"]
       action: sync

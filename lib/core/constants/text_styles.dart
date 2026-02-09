@@ -15,7 +15,7 @@ class AppTextStyles {
   static const TextStyle caption = TextStyle(fontSize: 12, color: Colors.grey);
 
   // ============================================
-  // ESTILOS PARA IDOSOS (Fontes maiores)
+  // ESTILOS ACESSIVEIS (Fontes maiores para campo)
   // ============================================
 
   /// Titulo principal - 32dp bold
@@ -118,7 +118,7 @@ class AppTextStyles {
   // ============================================
 
   /// Tamanho minimo para texto legivel em campo
-  static const double minElderlyFontSize = 16.0;
+  static const double minAccessibleFontSize = 16.0;
 
   /// Tamanho recomendado para corpo de texto
   static const double recommendedBodySize = 20.0;

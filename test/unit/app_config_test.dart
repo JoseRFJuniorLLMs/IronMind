@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:eva_mobile/core/config/app_config.dart';
+import 'package:ironmind/core/config/app_config.dart';
 
 /// Unit tests for AppConfig
 /// Focus: Environment variable validation, security enforcement

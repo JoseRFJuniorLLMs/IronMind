@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:eva_mobile/data/services/storage_service.dart';
+import 'package:ironmind/data/services/storage_service.dart';
 
 /// Unit tests for StorageService
 /// Focus: Data persistence, encryption, clearing data
@@ -12,16 +12,16 @@ void main() {
   });
 
   group('StorageService - Basic Data Persistence', () {
-    test('Should save and retrieve idoso data', () async {
+    test('Should save and retrieve operator data', () async {
       // Arrange
-      const idosoId = 123;
+      const operatorId = 123;
       const nome = 'Dona Maria';
       const cpf = '123.456.789-00';
       const telefone = '(11) 98765-4321';
 
       // Act
-      final saved = await StorageService.saveIdosoData(
-        idosoId: idosoId,
+      final saved = await StorageService.saveOperatorData(
+        operatorId: operatorId,
         nome: nome,
         cpf: cpf,
         telefone: telefone,
@@ -29,17 +29,17 @@ void main() {
 
       // Assert
       expect(saved, true);
-      expect(StorageService.getIdosoId(), idosoId);
-      expect(StorageService.getIdosoNome(), nome);
-      expect(StorageService.getIdosoCpf(), cpf);
-      expect(StorageService.getIdosoTelefone(), telefone);
+      expect(StorageService.getOperatorId(), operatorId);
+      expect(StorageService.getOperatorNome(), nome);
+      expect(StorageService.getOperatorCpf(), cpf);
+      expect(StorageService.getOperatorTelefone(), telefone);
       expect(StorageService.isLoggedIn(), true);
     });
 
     test('Should return null for non-existent data', () {
       // Arrange & Act
-      final id = StorageService.getIdosoId();
-      final nome = StorageService.getIdosoNome();
+      final id = StorageService.getOperatorId();
+      final nome = StorageService.getOperatorNome();
 
       // Assert
       expect(id, null);
@@ -92,8 +92,8 @@ void main() {
   group('StorageService - Data Clearing', () {
     test('Should clear all data including secure tokens', () async {
       // Arrange - Save data first
-      await StorageService.saveIdosoData(
-        idosoId: 123,
+      await StorageService.saveOperatorData(
+        operatorId: 123,
         nome: 'Test User',
         cpf: '123.456.789-00',
         telefone: '(11) 98765-4321',
@@ -106,8 +106,8 @@ void main() {
 
       // Assert
       expect(cleared, true);
-      expect(StorageService.getIdosoId(), null);
-      expect(StorageService.getIdosoNome(), null);
+      expect(StorageService.getOperatorId(), null);
+      expect(StorageService.getOperatorNome(), null);
       expect(StorageService.isLoggedIn(), false);
       expect(await StorageService.getFcmToken(), null);
       expect(await StorageService.getAccessToken(), null);

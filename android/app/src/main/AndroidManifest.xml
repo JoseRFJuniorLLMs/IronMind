@@ -140,7 +140,7 @@
 
 
     <application
-        android:label="eva_mobile"
+        android:label="IronMind"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:persistent="true"

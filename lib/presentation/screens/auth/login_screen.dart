@@ -257,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context) => AlertDialog(
                             title: const Text('Precisa de ajuda?'),
                             content: const Text(
-                              'Se voce nao tem um CPF cadastrado, entre em contato com seu cuidador ou familiar responsavel para solicitar o cadastro no sistema EVA.',
+                              'Se voce nao tem um CPF cadastrado, entre em contato com o administrador do sistema para solicitar o cadastro.',
                             ),
                             actions: [
                               TextButton(

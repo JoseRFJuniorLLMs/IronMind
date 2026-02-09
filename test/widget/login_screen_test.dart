@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:eva_mobile/presentation/screens/auth/login_screen.dart';
-import 'package:eva_mobile/providers/auth_provider.dart';
+import 'package:ironmind/presentation/screens/auth/login_screen.dart';
+import 'package:ironmind/providers/auth_provider.dart';
 
 /// Widget tests for LoginScreen
 /// Focus: UI elements, form validation, user interactions

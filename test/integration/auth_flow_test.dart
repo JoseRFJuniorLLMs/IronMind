@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:eva_mobile/data/services/storage_service.dart';
+import 'package:ironmind/data/services/storage_service.dart';
 
 /// Integration tests for authentication flow
 /// Focus: Login/logout flow, session persistence
@@ -17,15 +17,15 @@ void main() {
   group('Auth Flow - Login', () {
     test('Should complete full login flow and persist session', () async {
       // Arrange
-      const idosoId = 456;
+      const operatorId = 456;
       const nome = 'Seu João';
       const cpf = '987.654.321-00';
       const telefone = '(21) 91234-5678';
       const fcmToken = 'fcm_token_xyz789';
 
       // Act - Simulate login
-      final savedUser = await StorageService.saveIdosoData(
-        idosoId: idosoId,
+      final savedUser = await StorageService.saveOperatorData(
+        operatorId: operatorId,
         nome: nome,
         cpf: cpf,
         telefone: telefone,
@@ -36,8 +36,8 @@ void main() {
       expect(savedUser, true);
       expect(savedToken, true);
       expect(StorageService.isLoggedIn(), true);
-      expect(StorageService.getIdosoId(), idosoId);
-      expect(StorageService.getIdosoNome(), nome);
+      expect(StorageService.getOperatorId(), operatorId);
+      expect(StorageService.getOperatorNome(), nome);
       expect(await StorageService.getFcmToken(), fcmToken);
     });
 
@@ -54,8 +54,8 @@ void main() {
   group('Auth Flow - Session Persistence', () {
     test('Should maintain session across app restarts (simulated)', () async {
       // Arrange - Login
-      await StorageService.saveIdosoData(
-        idosoId: 789,
+      await StorageService.saveOperatorData(
+        operatorId: 789,
         nome: 'Dona Rosa',
         cpf: '111.222.333-44',
         telefone: '(31) 99999-8888',
@@ -67,8 +67,8 @@ void main() {
 
       // Assert - Session should still exist
       expect(StorageService.isLoggedIn(), true);
-      expect(StorageService.getIdosoId(), 789);
-      expect(StorageService.getIdosoNome(), 'Dona Rosa');
+      expect(StorageService.getOperatorId(), 789);
+      expect(StorageService.getOperatorNome(), 'Dona Rosa');
       expect(await StorageService.getFcmToken(), 'persistent_token');
     });
   });
@@ -76,8 +76,8 @@ void main() {
   group('Auth Flow - Logout', () {
     test('Should complete full logout flow and clear all data', () async {
       // Arrange - Login first
-      await StorageService.saveIdosoData(
-        idosoId: 999,
+      await StorageService.saveOperatorData(
+        operatorId: 999,
         nome: 'Test User',
         cpf: '000.000.000-00',
         telefone: '(00) 00000-0000',
@@ -94,9 +94,9 @@ void main() {
       // Assert - All data should be gone
       expect(cleared, true);
       expect(StorageService.isLoggedIn(), false);
-      expect(StorageService.getIdosoId(), null);
-      expect(StorageService.getIdosoNome(), null);
-      expect(StorageService.getIdosoCpf(), null);
+      expect(StorageService.getOperatorId(), null);
+      expect(StorageService.getOperatorNome(), null);
+      expect(StorageService.getOperatorCpf(), null);
       expect(await StorageService.getFcmToken(), null);
       expect(await StorageService.getAccessToken(), null);
     });
@@ -114,25 +114,25 @@ void main() {
   group('Auth Flow - Multiple Sessions', () {
     test('Should replace old session with new login', () async {
       // Arrange - First login
-      await StorageService.saveIdosoData(
-        idosoId: 111,
+      await StorageService.saveOperatorData(
+        operatorId: 111,
         nome: 'First User',
         cpf: '111.111.111-11',
         telefone: '(11) 11111-1111',
       );
 
       // Act - Second login (same device, different user)
-      await StorageService.saveIdosoData(
-        idosoId: 222,
+      await StorageService.saveOperatorData(
+        operatorId: 222,
         nome: 'Second User',
         cpf: '222.222.222-22',
         telefone: '(22) 22222-2222',
       );
 
       // Assert - Should only have second user
-      expect(StorageService.getIdosoId(), 222);
-      expect(StorageService.getIdosoNome(), 'Second User');
-      expect(StorageService.getIdosoCpf(), '222.222.222-22');
+      expect(StorageService.getOperatorId(), 222);
+      expect(StorageService.getOperatorNome(), 'Second User');
+      expect(StorageService.getOperatorCpf(), '222.222.222-22');
     });
   });
 
@@ -141,8 +141,8 @@ void main() {
       // This is a design principle test
       // StorageService should use logger that masks sensitive data
 
-      await StorageService.saveIdosoData(
-        idosoId: 123,
+      await StorageService.saveOperatorData(
+        operatorId: 123,
         nome: 'Test',
         cpf: '123.456.789-00',
         telefone: '(11) 98765-4321',
