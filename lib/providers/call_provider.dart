@@ -713,7 +713,7 @@ class CallProvider with ChangeNotifier {
     if (_currentSessionId != null && _callStartTime != null) {
       await _apiService.saveCallLog(
         sessionId: _currentSessionId!,
-        idosoId: _currentUserData?['id'] ?? 0,
+        operatorId: _currentUserData?['id'] ?? 0,
         startTime: _callStartTime!,
         endTime: DateTime.now(),
         duration: _callDuration,

@@ -14,10 +14,10 @@ class ApiService {
   String get baseUrl => AppConfig.apiBaseUrl;
   String get audioUrl => AppConfig.apiAudioUrl;
 
-  /// Busca idoso pelo CPF usando o endpoint específico
+  /// Busca operador pelo CPF usando o endpoint específico
   Future<Map<String, dynamic>?> getOperatorByCpf(String cpf) async {
     try {
-      _logger.i('🔍 Buscando idoso por CPF: $cpf');
+      _logger.i('🔍 Buscando operador por CPF: $cpf');
 
       // Limpar CPF (remover pontos e traços)
       final cpfClean = cpf.replaceAll(RegExp(r'[^0-9]'), '');
@@ -31,26 +31,26 @@ class ApiService {
       _logger.i('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final idoso = jsonDecode(response.body);
-        _logger.i('✅ Idoso encontrado!');
-        _logger.i('📦 Data: $idoso');
-        _logger.i('🔑 ID: ${idoso['id']} (${idoso['id'].runtimeType})');
-        _logger.i('👤 Nome: ${idoso['nome']}');
-        _logger.i('📞 Telefone: ${idoso['telefone']}');
-        return idoso;
+        final operator = jsonDecode(response.body);
+        _logger.i('✅ Operador encontrado!');
+        _logger.i('📦 Data: $operator');
+        _logger.i('🔑 ID: ${operator['id']} (${operator['id'].runtimeType})');
+        _logger.i('👤 Nome: ${operator['nome']}');
+        _logger.i('📞 Telefone: ${operator['telefone']}');
+        return operator;
       } else if (response.statusCode == 404) {
         _logger.w('⚠️ CPF não encontrado');
         return null;
       } else {
         _logger.e(
-          '❌ Erro ao buscar idoso: ${response.statusCode} - ${response.body}',
+          '❌ Erro ao buscar operador: ${response.statusCode} - ${response.body}',
         );
         throw Exception(
           'Erro no servidor (${response.statusCode}). Tente novamente.',
         );
       }
     } catch (e) {
-      _logger.e('❌ Erro ao buscar idoso por CPF: $e');
+      _logger.e('❌ Erro ao buscar operador por CPF: $e');
       return null;
     }
   }
@@ -93,24 +93,24 @@ class ApiService {
 
   /// [DEPRECATED] Use getOperatorByCpf() e syncTokenByCpf() separadamente
 
-  /// Busca a lista completa de idosos
+  /// Busca a lista completa de operadores
   Future<List<Map<String, dynamic>>> listOperators() async {
     try {
-      _logger.i('🔍 Buscando idosos em: $baseUrl/idosos');
+      _logger.i('🔍 Buscando operadores em: $baseUrl/operators');
       final response = await http
-          .get(Uri.parse('$baseUrl/idosos'))
+          .get(Uri.parse('$baseUrl/operators'))
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        _logger.i('✅ ${data.length} idosos encontrados');
+        _logger.i('✅ ${data.length} operadores encontrados');
         return data.cast<Map<String, dynamic>>();
       }
 
-      _logger.w('⚠️ Status ${response.statusCode} ao buscar idosos');
+      _logger.w('⚠️ Status ${response.statusCode} ao buscar operadores');
       return [];
     } catch (e) {
-      _logger.e('❌ Erro ao listar idosos: $e');
+      _logger.e('❌ Erro ao listar operadores: $e');
       return [];
     }
   }
@@ -141,24 +141,24 @@ class ApiService {
     }
   }
 
-  /// Obtém dados detalhados de um idoso
+  /// Obtém dados detalhados de um operador
   Future<Map<String, dynamic>?> getOperator(int operatorId) async {
     try {
-      _logger.i('🔍 Buscando dados do idoso: $operatorId');
+      _logger.i('🔍 Buscando dados do operador: $operatorId');
       final response = await http
           .get(Uri.parse('$baseUrl/operators/$operatorId'))
           .timeout(_defaultTimeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _logger.i('✅ Dados do idoso obtidos');
+        _logger.i('✅ Dados do operador obtidos');
         return data;
       }
 
-      _logger.w('⚠️ Idoso não encontrado: status ${response.statusCode}');
+      _logger.w('⚠️ Operador não encontrado: status ${response.statusCode}');
       return null;
     } catch (e) {
-      _logger.e('❌ Erro ao obter dados do idoso: $e');
+      _logger.e('❌ Erro ao obter dados do operador: $e');
       return null;
     }
   }
@@ -166,7 +166,7 @@ class ApiService {
   /// Busca agendamentos pendentes
   Future<List<Map<String, dynamic>>> getUpcomingSchedules(int operatorId) async {
     try {
-      _logger.i('📅 Buscando agendamentos para idoso: $operatorId');
+      _logger.i('📅 Buscando agendamentos para operador: $operatorId');
       final response = await http
           .get(
             Uri.parse(
@@ -189,10 +189,10 @@ class ApiService {
     }
   }
 
-  /// Lista todos os agendamentos de um idoso (qualquer status)
+  /// Lista todos os agendamentos de um operador (qualquer status)
   Future<List<Map<String, dynamic>>> listAgendamentos(int operatorId) async {
     try {
-      _logger.i('📅 Listando todos os agendamentos para idoso: $operatorId');
+      _logger.i('📅 Listando todos os agendamentos para operador: $operatorId');
       final response = await http
           .get(
             Uri.parse('$baseUrl/agendamentos?operator_id=$operatorId'),
@@ -222,7 +222,7 @@ class ApiService {
     Map<String, dynamic>? dadosTarefa,
   }) async {
     try {
-      _logger.i('📅 Criando novo agendamento para idoso: $operatorId');
+      _logger.i('📅 Criando novo agendamento para operador: $operatorId');
       _logger.i('📞 Tipo: $tipo | Prioridade: $prioridade');
       _logger.i('🕐 Data/Hora: ${dataHoraAgendada.toIso8601String()}');
 
@@ -407,7 +407,7 @@ class ApiService {
   /// Obter histórico de chamadas (Migrado do CallRepository)
   Future<List<Map<String, dynamic>>> getCallHistory(int operatorId) async {
     try {
-      _logger.i('📚 Fetching call history for idoso: $operatorId');
+      _logger.i('📚 Fetching call history for operator: $operatorId');
 
       final url = Uri.parse('$audioUrl/call-logs?operator_id=$operatorId');
       final response = await http.get(url).timeout(_defaultTimeout);
@@ -564,18 +564,18 @@ class ApiService {
   /// Inicia uma vídeo chamada
   Future<Map<String, dynamic>> startVideoCall(int operatorId) async {
     try {
-      _logger.i('📞 Iniciando vídeo chamada para idoso ID: $operatorId');
+      _logger.i('📞 Iniciando vídeo chamada para operador ID: $operatorId');
 
       final response = await http
           .post(
             Uri.parse('$baseUrl/video-calls/start'),
             headers: {'Content-Type': 'application/json'},
-            body: json.encode({'operator_id': operatorId}),
+            body: jsonEncode({'operator_id': operatorId}),
           )
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = jsonDecode(response.body);
         _logger.i('✅ Vídeo chamada iniciada: ${data['session_id']}');
         return data;
       } else {
@@ -843,205 +843,4 @@ class ApiService {
     }
   }
 
-  // =====================================================================
-  // MEDICAMENTOS
-  // =====================================================================
-
-  /// Lista medicamentos de um idoso
-  Future<Map<String, dynamic>> getMedicamentos(int operatorId) async {
-    try {
-      _logger.i('💊 Buscando medicamentos para idoso: $operatorId');
-      final response = await http
-          .get(Uri.parse('$baseUrl/medicamentos?operator_id=$operatorId'))
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Medicamentos carregados');
-        return {'success': true, 'medicamentos': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao buscar medicamentos: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Cria um novo medicamento
-  Future<Map<String, dynamic>> criarMedicamento(dynamic medicamento) async {
-    try {
-      _logger.i('💊 Criando medicamento: ${medicamento.nome}');
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl/medicamentos'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(medicamento.toJson()),
-          )
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Medicamento criado');
-        return {'success': true, 'medicamento': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao criar medicamento: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Atualiza um medicamento
-  Future<Map<String, dynamic>> atualizarMedicamento(dynamic medicamento) async {
-    try {
-      _logger.i('💊 Atualizando medicamento: ${medicamento.nome}');
-      final response = await http
-          .put(
-            Uri.parse('$baseUrl/medicamentos/${medicamento.id}'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(medicamento.toJson()),
-          )
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Medicamento atualizado');
-        return {'success': true, 'medicamento': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao atualizar medicamento: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Registra tomada de medicamento
-  Future<Map<String, dynamic>> registrarTomadaMedicamento({
-    required int medicamentoId,
-    required String status,
-    String? observacao,
-  }) async {
-    try {
-      _logger.i('💊 Registrando tomada: $medicamentoId ($status)');
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl/medicamentos/$medicamentoId/registros'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'status': status,
-              'data_hora': DateTime.now().toIso8601String(),
-              'observacao': observacao,
-            }),
-          )
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _logger.i('✅ Tomada registrada');
-        return {'success': true};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao registrar tomada: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  // =====================================================================
-  // CONTATOS DE EMERGENCIA
-  // =====================================================================
-
-  /// Lista contatos de emergencia de um idoso
-  Future<Map<String, dynamic>> getContatosEmergencia(int operatorId) async {
-    try {
-      _logger.i('📞 Buscando contatos de emergencia para idoso: $operatorId');
-      final response = await http
-          .get(Uri.parse('$baseUrl/contatos-emergencia?operator_id=$operatorId'))
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Contatos carregados');
-        return {'success': true, 'contatos': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao buscar contatos: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Cria um novo contato de emergencia
-  Future<Map<String, dynamic>> criarContatoEmergencia(dynamic contato) async {
-    try {
-      _logger.i('📞 Criando contato: ${contato.nome}');
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl/contatos-emergencia'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(contato.toJson()),
-          )
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Contato criado');
-        return {'success': true, 'contato': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao criar contato: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Atualiza um contato de emergencia
-  Future<Map<String, dynamic>> atualizarContatoEmergencia(dynamic contato) async {
-    try {
-      _logger.i('📞 Atualizando contato: ${contato.nome}');
-      final response = await http
-          .put(
-            Uri.parse('$baseUrl/contatos-emergencia/${contato.id}'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(contato.toJson()),
-          )
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _logger.i('✅ Contato atualizado');
-        return {'success': true, 'contato': data};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao atualizar contato: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
-
-  /// Remove um contato de emergencia
-  Future<Map<String, dynamic>> removerContatoEmergencia(int contatoId) async {
-    try {
-      _logger.i('📞 Removendo contato: $contatoId');
-      final response = await http
-          .delete(Uri.parse('$baseUrl/contatos-emergencia/$contatoId'))
-          .timeout(_defaultTimeout);
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        _logger.i('✅ Contato removido');
-        return {'success': true};
-      }
-
-      return {'success': false, 'message': 'Erro ${response.statusCode}'};
-    } catch (e) {
-      _logger.e('❌ Erro ao remover contato: $e');
-      return {'success': false, 'message': e.toString()};
-    }
-  }
 }

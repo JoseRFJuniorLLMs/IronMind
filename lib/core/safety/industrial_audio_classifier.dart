@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 /// Classificador de sons industriais via YAMNet
-/// Refatorado do AudioEventClassifier (idosos) para equipamentos pesados
+/// Refatorado do AudioEventClassifier (industrial) para equipamentos pesados
 class IndustrialAudioClassifier {
   late Interpreter _interpreter;
   bool _isInitialized = false;

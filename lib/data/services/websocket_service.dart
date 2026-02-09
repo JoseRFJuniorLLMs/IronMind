@@ -97,7 +97,7 @@ class WebSocketService {
   void _registerClient() {
     try {
       // Get CPF from storage
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
 
       if (cpf == null || cpf.isEmpty) {
         _logger.e('❌ CPF não encontrado no storage, não é possível registrar');

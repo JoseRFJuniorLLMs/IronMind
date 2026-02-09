@@ -20,7 +20,7 @@ class AccessibilityHelper {
     final textScaleFactor = MediaQuery.textScaleFactorOf(context);
     // Clamp to prevent UI breaking at extreme scales
     // 0.8 = -20% (minimum)
-    // 2.0 = +100% (maximum for elderly users)
+    // 2.0 = +100% (maximum for field operators)
     final clampedFactor = textScaleFactor.clamp(0.8, 2.0);
     return baseSize * clampedFactor;
   }
@@ -44,7 +44,7 @@ class AccessibilityHelper {
   /// Minimum touch target size in logical pixels (WCAG 2.1 Level AA)
   static const double minTouchTargetSize = 48.0;
 
-  /// Recommended touch target size for elderly users (larger)
+  /// Recommended touch target size for field operators (larger)
   static const double recommendedTouchTargetSize = 64.0;
 
   /// Ensures widget meets minimum touch target size
@@ -69,7 +69,7 @@ class AccessibilityHelper {
     );
   }
 
-  /// Creates a semantically labeled button for elderly users
+  /// Creates a semantically labeled button for field operators
   /// Provides clear description and usage hints
   ///
   /// Example:

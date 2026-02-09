@@ -28,7 +28,7 @@ enum EquipmentAlertType {
 }
 
 /// Controlador de segurança de equipamentos industriais
-/// Refatorado do SafetyController (idosos) para uso em campo
+/// Refatorado do SafetyController (industrial) para uso em campo
 /// Faz fusão Bayesiana de sensores: vibração + áudio + visão (YOLO)
 class EquipmentSafetyController extends ChangeNotifier {
   static final Logger _logger = Logger();
@@ -135,7 +135,7 @@ class EquipmentSafetyController extends ChangeNotifier {
 
   void _handleAudioEvent(dynamic rawResult) async {
     // Re-classificar com o classificador industrial
-    // O AudioCaptureService original usa o classificador de idosos
+    // O AudioCaptureService original usa o classificador industrial
     // Aqui interceptamos e reclassificamos
     _audioConfidence = 0.0;
 

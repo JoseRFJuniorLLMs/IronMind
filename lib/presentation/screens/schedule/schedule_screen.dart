@@ -72,13 +72,13 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     });
 
     try {
-      final idosoId = StorageService.getOperatorId();
+      final operatorId = StorageService.getOperatorId();
 
-      if (idosoId == null) {
-        throw Exception('ID do idoso não encontrado');
+      if (operatorId == null) {
+        throw Exception('ID do operador não encontrado');
       }
 
-      final data = await _apiService.listAgendamentos(idosoId);
+      final data = await _apiService.listAgendamentos(operatorId);
 
       final allAppointments =
           data.map((json) => Agendamento.fromJson(json)).toList();
@@ -498,7 +498,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         hint: 'Toque para criar o agendamento',
         child: SizedBox(
           width: double.infinity,
-          height: 64, // Touch target minimo para idosos
+          height: 64, // Touch target minimo para acessibilidade
           child: ElevatedButton(
             onPressed: _isLoading ? null : _scheduleCall,
             style: ElevatedButton.styleFrom(
@@ -1182,15 +1182,15 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     });
 
     try {
-      final idosoId = StorageService.getOperatorId();
+      final operatorId = StorageService.getOperatorId();
 
-      if (idosoId == null) {
-        throw Exception('ID do idoso não encontrado. Faça login novamente.');
+      if (operatorId == null) {
+        throw Exception('ID do operador não encontrado. Faça login novamente.');
       }
 
       _logger.i('📅 Agendando chamada para: $dateTime');
       _logger.i('📞 Tipo: $_selectedTipo | Prioridade: $_selectedPrioridade');
-      _logger.i('👤 Idoso ID: $idosoId');
+      _logger.i('👤 Operator ID: $operatorId');
 
       // ✅ Mostra dialog de progresso
       if (mounted) {
@@ -1216,7 +1216,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       }
 
       final result = await _apiService.createAgendamento(
-        idosoId: idosoId,
+        operatorId: operatorId,
         dataHoraAgendada: dateTime,
         tipo: _selectedTipo,
         prioridade: _selectedPrioridade,

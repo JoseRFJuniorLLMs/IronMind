@@ -237,8 +237,8 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
 
     try {
       // Testar escrita
-      await StorageService.saveIdosoData(
-        idosoId: 999999,
+      await StorageService.saveOperatorData(
+        operatorId: 999999,
         nome: 'Teste Diagnostico',
         cpf: '12345678900',
         telefone: '11999999999',
@@ -246,7 +246,7 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
       _addSuccess('Escrita no storage OK');
 
       // Testar leitura
-      final cpf = StorageService.getIdosoCpf();
+      final cpf = StorageService.getOperatorCpf();
       if (cpf == '12345678900') {
         _addSuccess('Leitura do storage OK');
       } else {
@@ -273,11 +273,11 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
       // Testar conexão com endpoint real (by-cpf)
       try {
         const testCpf = '64525430249';
-        _addLog('Testando endpoint: /idosos/by-cpf/$testCpf');
+        _addLog('Testando endpoint: /operadores/by-cpf/$testCpf');
 
-        final idosoData = await apiService.getIdosoByCpf(testCpf);
+        final operatorData = await apiService.getOperatorByCpf(testCpf);
 
-        if (idosoData != null) {
+        if (operatorData != null) {
           _addSuccess('API acessível e funcionando');
           _addLog('Resposta válida recebida do servidor');
         } else {
@@ -526,17 +526,17 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
       _addLog('API Base URL: ${apiService.baseUrl}');
 
       const cpf = '64525430249';
-      _addLog('🔍 Buscando idoso com CPF: $cpf');
+      _addLog('🔍 Buscando operador com CPF: $cpf');
 
-      final idosoData = await apiService.getIdosoByCpf(cpf);
+      final operatorData = await apiService.getOperatorByCpf(cpf);
 
-      if (idosoData != null) {
+      if (operatorData != null) {
         _addSuccess('✅ API FUNCIONANDO!');
-        _addLog('Nome: ${idosoData['nome']}');
-        _addLog('Telefone: ${idosoData['telefone']}');
-        _addLog('ID: ${idosoData['id']}');
+        _addLog('Nome: ${operatorData['nome']}');
+        _addLog('Telefone: ${operatorData['telefone']}');
+        _addLog('ID: ${operatorData['id']}');
         _addLog(
-          'Device Token: ${idosoData['device_token']?.substring(0, 30)}...',
+          'Device Token: ${operatorData['device_token']?.substring(0, 30)}...',
         );
       } else {
         _addError('❌ CPF não encontrado ou API retornou null');

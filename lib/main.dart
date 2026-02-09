@@ -132,7 +132,7 @@ void main() async {
     FirebaseService.onVoiceCallReceived = (sessionId, userData) {
       final logger = Logger();
       logger.i('[IronMind] Call received! Session: $sessionId');
-      callProvider.receiveCall(sessionId, idosoData: userData);
+      callProvider.receiveCall(sessionId, userData: userData);
     };
 
     // 👂 INICIAR LISTENERS AGORA (Seguro, pois o callback está registrado)

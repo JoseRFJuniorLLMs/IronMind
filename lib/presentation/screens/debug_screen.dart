@@ -169,9 +169,9 @@ class _DebugScreenState extends State<DebugScreen> {
       _addLog('💾 ===== VERIFICANDO STORAGE LOCAL =====');
 
       final storedToken = StorageService.getFcmToken();
-      final idosoNome = StorageService.getIdosoNome();
-      final idosoCpf = StorageService.getIdosoCpf();
-      final idosoId = StorageService.getIdosoId();
+      final operatorNome = StorageService.getOperatorNome();
+      final operatorCpf = StorageService.getOperatorCpf();
+      final operatorId = StorageService.getOperatorId();
 
       if (storedToken != null) {
         _addLog('✅ Token salvo localmente');
@@ -180,10 +180,10 @@ class _DebugScreenState extends State<DebugScreen> {
         _addLog('⚠️ Nenhum token no storage local');
       }
 
-      if (idosoNome != null) {
-        _addLog('✅ Usuário logado: $idosoNome');
-        _addLog('   CPF: $idosoCpf');
-        _addLog('   ID: $idosoId');
+      if (operatorNome != null) {
+        _addLog('✅ Usuário logado: $operatorNome');
+        _addLog('   CPF: $operatorCpf');
+        _addLog('   ID: $operatorId');
         _tokenSynced = true;
       } else {
         _addLog('⚠️ Nenhum usuário logado');
@@ -242,7 +242,7 @@ class _DebugScreenState extends State<DebugScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = StorageService.isLoggedIn();
-    final userName = StorageService.getIdosoNome();
+    final userName = StorageService.getOperatorNome();
 
     return Scaffold(
       appBar: AppBar(

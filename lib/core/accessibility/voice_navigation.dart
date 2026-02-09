@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:go_router/go_router.dart';
 
 /// Voice navigation service for accessibility
-/// Allows elderly users with motor impairments to navigate using voice commands
+/// Allows operators with motor impairments to navigate using voice commands
 /// All processing is done locally (no cloud) for privacy
 ///
 /// Supported commands (Portuguese):
@@ -46,7 +46,7 @@ class VoiceNavigationService {
 
       // Initialize TTS
       await _tts.setLanguage('pt-BR');
-      await _tts.setSpeechRate(0.5); // Slower for elderly
+      await _tts.setSpeechRate(0.5); // Slower for clarity in field
       await _tts.setVolume(1.0);
 
       _isInitialized = true;

@@ -99,20 +99,20 @@ class _SetupScreenState extends State<SetupScreen> {
 
       _logger.i('✅ Token: ${token.substring(0, 30)}...');
 
-      // ✅ PASSO 3: Buscar dados do idoso (Tradicional)
-      _logger.i('🔍 Buscando dados do idoso...');
+      // ✅ PASSO 3: Buscar dados do operador (Tradicional)
+      _logger.i('🔍 Buscando dados do operador...');
       final apiService = ApiService();
-      final idosoData = await apiService.getIdosoByCpf(cpf);
+      final operatorData = await apiService.getOperatorByCpf(cpf);
 
-      if (idosoData == null) {
+      if (operatorData == null) {
         throw Exception('CPF não encontrado no sistema');
       }
 
-      _logger.i('✅ Idoso encontrado: ${idosoData['nome']}');
-      final idosoId = _parseIdosoId(idosoData['id']);
+      _logger.i('✅ Operador encontrado: ${operatorData['nome']}');
+      final operatorId = _parseOperatorId(operatorData['id']);
 
-      if (idosoId == null) {
-        throw Exception('ID do idoso inválido');
+      if (operatorId == null) {
+        throw Exception('ID do operador inválido');
       }
 
       // ✅ PASSO 4: Sincronizar token
@@ -120,11 +120,11 @@ class _SetupScreenState extends State<SetupScreen> {
       await apiService.syncTokenByCpf(cpf: cpf, token: token);
 
       // ✅ PASSO 5: Salvar localmente
-      final nome = _parseString(idosoData['nome']) ?? 'Sem nome';
-      final telefone = _parseString(idosoData['telefone']) ?? '';
+      final nome = _parseString(operatorData['nome']) ?? 'Sem nome';
+      final telefone = _parseString(operatorData['telefone']) ?? '';
 
-      await StorageService.saveIdosoData(
-        idosoId: idosoId,
+      await StorageService.saveOperatorData(
+        operatorId: operatorId,
         nome: nome,
         cpf: cpf,
         telefone: telefone,
@@ -375,7 +375,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
       final apiService = ApiService();
       await apiService.sendVitalSigns(
-        idosoId: StorageService.getIdosoId() ?? 0,
+        operatorId: StorageService.getOperatorId() ?? 0,
         vitalSigns: [
           {
             'tipo': 'emergencia',
@@ -446,7 +446,7 @@ class _SetupScreenState extends State<SetupScreen> {
     );
   }
 
-  int? _parseIdosoId(dynamic value) {
+  int? _parseOperatorId(dynamic value) {
     if (value == null) return null;
     if (value is int) return value;
     if (value is String) {

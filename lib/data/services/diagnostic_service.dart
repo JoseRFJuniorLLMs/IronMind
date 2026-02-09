@@ -101,8 +101,8 @@ class DiagnosticService {
     try {
       final cpf = StorageService.getOperatorCpf();
       _log('CPF salvo: $cpf');
-      final idosoId = StorageService.getOperatorId();
-      _log('ID salvo: $idosoId');
+      final operatorId = StorageService.getOperatorId();
+      _log('ID salvo: $operatorId');
     } catch (e) {
       _log('Erro Storage: $e');
     }

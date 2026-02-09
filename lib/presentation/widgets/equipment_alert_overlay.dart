@@ -4,7 +4,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:vibration/vibration.dart';
 
 /// Overlay de alerta industrial - aparece sobre a tela de inspeção
-/// Refatorado do SentinelaAlertOverlay (idosos) para equipamentos
+/// Refatorado do SentinelaAlertOverlay (industrial) para equipamentos
 class EquipmentAlertOverlay extends StatefulWidget {
   final VoidCallback? onDismiss;
 

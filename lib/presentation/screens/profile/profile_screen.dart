@@ -14,9 +14,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     // ✅ Buscar dados reais do storage
     final nome = StorageService.getOperatorNome() ?? 'Usuário';
-    final cpf = StorageService.getIdosoCpf() ?? 'Não disponível';
-    final telefone = StorageService.getIdosoTelefone() ?? 'Não disponível';
-    final id = StorageService.getIdosoId()?.toString() ?? 'N/A';
+    final cpf = StorageService.getOperatorCpf() ?? 'Não disponível';
+    final telefone = StorageService.getOperatorTelefone() ?? 'Não disponível';
+    final id = StorageService.getOperatorId()?.toString() ?? 'N/A';
 
     return Scaffold(
       extendBodyBehindAppBar: true,

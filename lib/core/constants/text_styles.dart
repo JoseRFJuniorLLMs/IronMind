@@ -68,7 +68,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
   );
 
-  /// Caption - 16dp (nunca menor que 16 para idosos)
+  /// Caption - 16dp (nunca menor que 16 para leitura em campo)
   static const TextStyle accessibleCaption = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -117,7 +117,7 @@ class AppTextStyles {
   // TAMANHOS MINIMOS RECOMENDADOS
   // ============================================
 
-  /// Tamanho minimo para texto legivel por idosos
+  /// Tamanho minimo para texto legivel em campo
   static const double minElderlyFontSize = 16.0;
 
   /// Tamanho recomendado para corpo de texto

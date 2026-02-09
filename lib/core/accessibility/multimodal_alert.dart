@@ -31,7 +31,7 @@ class MultimodalAlert {
 
     try {
       await _tts.setLanguage('pt-BR');
-      await _tts.setSpeechRate(0.5); // Slower for elderly (0.0 = very slow, 1.0 = normal)
+      await _tts.setSpeechRate(0.5); // Slower for clarity in field (0.0 = very slow, 1.0 = normal)
       await _tts.setVolume(1.0); // Maximum volume
       await _tts.setPitch(1.0); // Normal pitch
       _ttsInitialized = true;

@@ -61,13 +61,13 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   Future<void> _startBackendSession() async {
     try {
-      final idosoId = StorageService.getIdosoId();
-      if (idosoId == null) {
-        throw Exception('ID do idoso não encontrado no storage.');
+      final operatorId = StorageService.getOperatorId();
+      if (operatorId == null) {
+        throw Exception('ID do operador não encontrado no storage.');
       }
 
-      _logger.i('📞 Iniciando sessão de vídeo para idoso $idosoId...');
-      final response = await _apiService.startVideoCall(idosoId);
+      _logger.i('📞 Iniciando sessão de vídeo para operador $operatorId...');
+      final response = await _apiService.startVideoCall(operatorId);
 
       if (response['success'] == true && response['session_id'] != null) {
         setState(() {

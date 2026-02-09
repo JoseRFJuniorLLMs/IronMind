@@ -412,7 +412,7 @@ class FirebaseService {
           userData['prioridade'] = data['prioridade'];
         }
 
-        _logger.i('Idoso data: $userData');
+        _logger.i('Operator data: $userData');
 
         // ✅ LÓGICA DE LINHA OCUPADA (BUSY LINE)
         // Verificar se já existe uma chamada ativa

@@ -62,7 +62,9 @@ class YoloInferenceEngine {
   YoloInferenceEngine({required this.classNames});
 
   bool get isInitialized => _isInitialized;
+  bool get isLoaded => _isInitialized;
   String get currentModel => _currentModel;
+  String get currentModelName => _currentModel;
 
   /// Inicializa com o modelo primário (YOLO26n)
   /// Fallback automático para YOLO-NAS-S → YOLOv8n se falhar

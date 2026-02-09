@@ -11,7 +11,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import '../safety/vibration_detector_fsm.dart';
 
 /// IronSentinel - Serviço de monitoramento contínuo de equipamentos em background
-/// Refatorado do SentinelaService (queda de idosos) para inspeção industrial
+/// Refatorado do SentinelaService (monitoramento de saúde para inspeção industrial)
 /// Monitora vibração via acelerômetro enquanto operador trabalha
 class IronSentinelService {
   static final Logger _logger = Logger();
