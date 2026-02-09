@@ -35,7 +35,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     // 🔴 P1 FIX: Force launch app after showing CallKit
     try {
-      const platform = MethodChannel('com.eva.br/app_launcher');
+      const platform = MethodChannel('com.ironmind.br/app_launcher');
       await platform.invokeMethod('launchApp');
       logger.i('✅ App launch triggered from background');
     } catch (e) {

@@ -300,18 +300,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           const SizedBox(height: 30),
 
-                          // SEGUNDA FILEIRA: Agenda
+                          // BOTÕES PRINCIPAIS: Inspecionar + Falar
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // 3. Botão AGENDAMENTO
+                              // 1. Botão INSPECIONAR (Câmera + IA)
                               _buildActionButton(
-                                icon: Icons.calendar_month,
-                                label: 'Agenda',
-                                colors: [Color(0xFF9F70D8), Color(0xFF6B8DD6)],
+                                icon: Icons.camera_alt,
+                                label: 'Inspecionar',
+                                colors: [Color(0xFF00BCD4), Color(0xFF0097A7)],
                                 onTap: () {
-                                  _logger.i('📅 Abrindo agendamento...');
-                                  context.push('/schedule');
+                                  _logger.i('[IronMind] Abrindo camera de inspecao...');
+                                  context.push('/inspection');
+                                },
+                              ),
+                              const SizedBox(width: 40),
+                              // 2. Botão FALAR (Comando de voz)
+                              _buildActionButton(
+                                icon: Icons.mic,
+                                label: 'Falar',
+                                colors: [Color(0xFFFF6B35), Color(0xFFE55100)],
+                                onTap: () {
+                                  _logger.i('[IronMind] Iniciando comando de voz...');
+                                  context.push('/call');
                                 },
                               ),
                             ],

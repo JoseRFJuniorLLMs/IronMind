@@ -26,7 +26,7 @@ void main() {
     final androidInfo = clientInfo['android_client_info'];
 
     // 5. Verifica Package Name
-    expect(androidInfo['package_name'], equals('com.eva.br'),
+    expect(androidInfo['package_name'], equals('com.ironmind.br'),
         reason: 'Package name incorreto no JSON');
 
     print('✅ SUCESSO: google-services.json encontrado e validado!');

@@ -7,9 +7,9 @@ plugins {
 }
 
 android {
-    namespace = "com.eva.br"
+    namespace = "com.ironmind.br"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.eva.br"
+        applicationId = "com.ironmind.br"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 26
@@ -57,6 +57,17 @@ android {
                 val outputFileName = "BETA0001.apk"
                 output.outputFileName = outputFileName
             }
+    }
+
+    packaging {
+        jniLibs {
+            pickFirsts += listOf(
+                "lib/arm64-v8a/libonnxruntime.so",
+                "lib/armeabi-v7a/libonnxruntime.so",
+                "lib/x86/libonnxruntime.so",
+                "lib/x86_64/libonnxruntime.so"
+            )
+        }
     }
 
     externalNativeBuild {

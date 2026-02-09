@@ -1,0 +1,197 @@
+# Manual de Referencia - Escavadeira Hidraulica Cat 320D2
+# Fonte: Guia Pratico de Manutencao Cat 320D2 (00009f7d.pdf - 236 paginas)
+# Este YAML contem TODOS os sistemas e intervalos do manual oficial
+equipamento: escavadeira
+modelo: "Cat 320D2"
+fonte: "Guia Pratico de Manutencao - Escavadeira Hidraulica Cat 320D2"
+
+# Intervalos de manutencao oficiais Cat
+intervalos_manutencao:
+  10h: "Diaria - antes de cada turno"
+  250h_iniciais: "Revisao inicial unica"
+  250h: "Revisao periodica"
+  500h: "Revisao intermediaria"
+  1000h: "Revisao completa"
+  2000h: "Revisao geral - reinicia ciclo"
+
+# Componentes mapeados para deteccao YOLO
+componentes:
+  # === ESTEIRAS E MATERIAL RODANTE ===
+  esteira_ok:
+    nome: Esteira e Material Rodante
+    estado: normal
+    fala: "Esteira da escavadeira Cat 320D2 com tensao adequada. Deflexao entre 40 e 55 milimetros conforme especificacao. Sapatas, roletes superiores, roletes da esteira, rodas guia e rodas motrizes em bom estado."
+    acao: "Verificar ajuste da esteira a cada 10 horas. Inspecionar quanto a desgaste e acumulo de sujeira. Ouvir ruidos anormais ao mover lentamente em area aberta."
+    intervalo: "10h"
+
+  esteira_desgastada:
+    nome: Esteira e Material Rodante
+    estado: defeito
+    severidade: alta
+    fala: "Esteira com desgaste detectado. Medir deflexao com regua reta entre rolete superior frontal e roda guia. Especificacao Cat 320D2: 40 a 55 milimetros. Verificar sapatas, roletes e parafusos de fixacao."
+    acao: "Operar maquina na direcao das rodas guia. Parar com pino da esteira sobre rolete superior frontal. Desligar motor. Medir deflexao. Para apertar: adicionar graxa pela graxeira. Para afrouxar: abrir valvula de alivio no maximo uma volta, nunca mais. Torque valvula: 34 mais ou menos 5 Nm. Se desgaste severo nos componentes, consultar assistencia tecnica."
+    prazo: "proxima parada programada"
+    especificacao: "Deflexao: 40-55mm | Torque valvula alivio: 34 +/- 5 Nm"
+    aviso: "Graxa sob pressao pode causar ferimentos graves. Nao observar valvula de alivio diretamente."
+
+  # === CACAMBA E ARTICULACOES ===
+  cacamba_ok:
+    nome: Cacamba e Articulacoes
+    estado: normal
+    fala: "Cacamba da Cat 320D2 em bom estado. Sem trincas ou deformacoes. Articulacoes da cacamba lubrificadas. Pinos e buchas sem folga excessiva."
+    acao: "Lubrificar articulacoes a cada 10 horas. Limpar graxeiras antes da aplicacao. Usar graxa Cat 5 por cento molibdenio para lanca, braco e articulacao de controle da cacamba. Bomba Cat 8F-9866."
+    intervalo: "10h"
+    pecas: "8F-9866 Bomba Lubrificacao | 183-3424 Graxa 5Moly 14oz"
+
+  cacamba_trincada:
+    nome: Cacamba e Articulacoes
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Trinca na cacamba da Cat 320D2 detectada. Risco de propagacao sob carga. Nao operar com carga ate reparo."
+    acao: "Parar operacao imediatamente. Abaixar cacamba ate o solo. Avaliar extensao da trinca por inspecao visual e liquido penetrante. Reparar com solda qualificada ou substituir cacamba. Na reinstalacao, encher completamente todas as cavidades da articulacao com graxa. Efetuar manutencao das graxeiras apos operacao embaixo de agua."
+    prazo: "imediato"
+
+  # === CILINDROS HIDRAULICOS (LANCA, BRACO, CACAMBA) ===
+  cilindro_ok:
+    nome: Cilindros Hidraulicos
+    estado: normal
+    fala: "Cilindros hidraulicos da lanca, braco e cacamba operando normalmente. Sem vazamentos nas hastes. Retentores integros. Graxeiras da lanca e braco lubrificadas."
+    acao: "Lubrificar a cada 10 horas: graxeiras na base dos cilindros da lanca, graxeiras nas hastes dos cilindros da lanca, graxeira do cabecote do braco, graxeira na haste do cilindro do braco, e graxeira na extremidade do cabecote do cilindro da cacamba. Aplicar graxa com lanca levantada e depois com lanca abaixada no solo."
+    intervalo: "10h"
+
+  cilindro_vazando:
+    nome: Cilindros Hidraulicos
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO CRITICO. Vazamento no cilindro hidraulico da Cat 320D2. Perda de forca hidraulica. Oleo quente pode causar queimaduras graves."
+    acao: "Parar operacao. Estacionar em superficie plana. Abaixar cacamba ate o solo com braco na posicao vertical. Desligar motor. Verificar ponto do vazamento: retentores, conexoes ou haste. Substituir retentores danificados. Se haste danificada, substituir cilindro completo. Verificar nivel de oleo hidraulico antes de religar."
+    prazo: "imediato"
+    aviso: "Oleo quente e componentes quentes podem causar ferimentos. Nao permita contato com a pele."
+
+  # === MANCAL E COMANDO DE GIRO ===
+  rolamento_ok:
+    nome: Mancal e Comando de Giro
+    estado: normal
+    fala: "Mancal de giro da Cat 320D2 operando normalmente. Sem vibracao ou ruido anormal. Oleo do comando de giro entre marcas ADD e FULL. Engrenagem de giro com ondas de graxa presentes."
+    acao: "Lubrificar mancal de giro a cada 250 horas. Graxeiras localizadas debaixo da base da lanca. Aplicar graxa ate sair pelos retentores. Verificar oleo do comando de giro com vareta. Inspecionar engrenagem de giro a cada 2000 horas."
+    intervalo: "250h mancal | 500h oleo comando giro | 2000h engrenagem"
+
+  rolamento_ruidoso:
+    nome: Mancal e Comando de Giro
+    estado: defeito
+    severidade: alta
+    fala: "Ruido anormal no mancal de giro da Cat 320D2. Possivel desgaste das pistas ou falta de lubrificacao. Verificar tambem comando de giro e engrenagem."
+    acao: "Limpar graxeiras do mancal com pano. Lubrificar ate graxa sair pelos retentores. Nao aplicar excesso. Verificar oleo do comando de giro: retirar vareta, nivel entre ADD e FULL. Usar oleo Cat TDTO SAE 50 part 7X-7858. Inspecionar engrenagem de giro: areas manchadas ou sem ondas indicam falta de graxa. Adicionar graxa Cat 5P-0960."
+    prazo: "100 horas"
+    pecas: "7X-7858 Oleo Cat TDTO SAE 50 | 5P-0960 Graxa Engrenagem Giro"
+
+  # === SISTEMA HIDRAULICO ===
+  hidraulico_ok:
+    nome: Sistema Hidraulico
+    estado: normal
+    fala: "Sistema hidraulico da Cat 320D2 operando normalmente. Nivel de oleo dentro da faixa especificada. Filtros sem restricao."
+    acao: "Verificar nivel de oleo hidraulico a cada 10 horas. Maquina em solo nivelado, cacamba no solo, braco vertical. Maquina fria: nivel na faixa inferior. Maquina quente: nivel na faixa superior."
+    intervalo: "10h nivel | 500h filtro piloto | 1000h filtro retorno | 2000h troca oleo"
+
+  hidraulico_vazando:
+    nome: Sistema Hidraulico
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Vazamento no sistema hidraulico da Cat 320D2. Verificar mangueiras, conexoes, filtros e cilindros. Nunca remover bujao com oleo quente."
+    acao: "Desligar motor. Verificar nivel de oleo: porta de acesso no lado direito. Se filtro obstruido, substituir filtro retorno Cat 179-9806. Apertar bujao enchimento para aliviar pressao do tanque antes de qualquer manutencao. Oleo Cat HYDO Advanced 10 part 309-6942."
+    prazo: "imediato"
+    pecas: "179-9806 Filtro Retorno | 5l-8670 Filtro Piloto | 093-7521 Filtro Dreno Carcaca | 309-6942 Oleo Cat HYDO Advanced 10"
+
+  # === CORREIA DO MOTOR ===
+  correia_ok:
+    nome: Correia do Motor
+    estado: normal
+    fala: "Correia do motor da Cat 320D2 em bom estado. Sem trincas ou desgaste. Tensor automatico ajustando corretamente."
+    acao: "Inspecionar correia a cada 500 horas. Destrancar e levantar capo para inspecao visual. Verificar existencia de desgaste e trincas."
+    intervalo: "500h"
+
+  correia_desgastada:
+    nome: Correia do Motor
+    estado: defeito
+    severidade: alta
+    fala: "Correia do motor da Cat 320D2 com desgaste ou trincas. Substituir na proxima parada."
+    acao: "Destrancar e levantar capo. Remover protetor superior do ventilador. Girar tensor de correias no sentido horario para remover correia. Instalar correia nova Cat 357-2637. Girar tensor no sentido horario para instalar. Reinstalar protetor. Fechar capo."
+    prazo: "proxima parada"
+    pecas: "357-2637 Correia do Motor"
+
+  # === FILTROS ===
+  filtro_ok:
+    nome: Filtros (Ar/Oleo/Combustivel/Hidraulico)
+    estado: normal
+    fala: "Filtros da Cat 320D2 em bom estado. Indicadores de restricao na faixa normal. Fluxo adequado."
+    acao: "Verificar indicadores a cada 10 horas. Intervalos de troca: filtro ar cabine recirculacao 10h, ar primario motor 500h, oleo motor 500h, filtro piloto hidraulico 500h, filtro retorno hidraulico 1000h."
+
+  filtro_sujo:
+    nome: Filtros (Ar/Oleo/Combustivel/Hidraulico)
+    estado: defeito
+    severidade: media
+    fala: "Filtro da Cat 320D2 com restricao. Se indicador com pistao amarelo na area vermelha, substituir imediatamente. Se fumaca escura no escape, verificar filtro de ar do motor."
+    acao: "Identificar qual filtro: se combustivel, pressionar botao reiniciar indicador apos troca. Se ar da cabine, deslizar assento para frente e remover elemento. Bater com palma da mao para limpar, nao usar ar comprimido. Se ar do motor, abrir portas de acesso lado esquerdo. Nunca reutilizar filtro secundario."
+    prazo: "proxima manutencao"
+    pecas: "293-1184 Filtro Ar Cabine | 131-8822 Filtro Ar Primario | 131-8821 Filtro Ar Secundario | 322-3155 Filtro Oleo Motor | 179-9806 Filtro Retorno Hidraulico"
+
+  # === OLEO DO MOTOR ===
+  oleo_ok:
+    nome: Oleo do Motor
+    estado: normal
+    fala: "Nivel de oleo do motor da Cat 320D2 adequado. Vareta entre marcas H e L. Sem vazamentos no carter."
+    acao: "Verificar nivel a cada 10 horas. Abrir capo, remover vareta, limpar, reinserir, remover e ler nivel entre H e L. Nao encher em excesso para nao danificar motor."
+    intervalo: "10h verificar | 500h trocar oleo e filtro"
+
+  oleo_vazando:
+    nome: Oleo do Motor
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Vazamento de oleo no motor da Cat 320D2. Oleo quente causa queimaduras. Drenar com motor quente para remover particulas em suspensao."
+    acao: "Desligar motor. Valvula de dreno do carter fica embaixo da traseira da estrutura superior. Abrir e drenar em recipiente adequado. Trocar filtro oleo Cat 322-3155: afrouxar, remover, limpar alojamento, instalar novo com camada de oleo na junta. Encher com oleo Cat 15W40 part 3E-9848. Aguardar 30 minutos e verificar nivel com vareta."
+    prazo: "imediato"
+    pecas: "3E-9848 Oleo Cat 15W40 | 322-3155 Filtro Oleo Motor"
+
+  # === SISTEMA ARREFECIMENTO ===
+  # Mapeado para classes de mineracao (britador = referencia generica)
+  britador_ok:
+    nome: Sistema de Arrefecimento
+    estado: normal
+    fala: "Sistema de arrefecimento da Cat 320D2 operando normalmente. Liquido arrefecedor entre marcas FULL e LOW. Condensador limpo."
+    acao: "Verificar nivel a cada 10 horas. Abrir porta de acesso traseira esquerda. Verificar reservatorio entre FULL e LOW. Limpar condensador com agua quando houver detritos."
+    intervalo: "10h nivel | 500h condensador | 2000h trocar liquido"
+
+  britador_desgastado:
+    nome: Sistema de Arrefecimento
+    estado: defeito
+    severidade: media
+    fala: "Sistema de arrefecimento da Cat 320D2 com problema. Nivel baixo ou condensador obstruido. Sistema pressurizado, nao abrir quente."
+    acao: "Parar motor e esperar resfriar. Afrouxar tampa lentamente para aliviar pressao. Completar liquido arrefecedor. Limpar condensador: porta de acesso lado esquerdo. Usar agua limpa para eliminar poeira. Nao usar escova dura para nao torcer aletas."
+    prazo: "proxima parada"
+    aviso: "Sistema pressurizado. Liquido quente pode causar queimaduras graves."
+
+# Tabelas de referencia do manual Cat 320D2
+tabelas:
+  oleos_recomendados:
+    motor: "Cat 15W40 (3E-9848) | Verificar faixa de temperatura"
+    hidraulico: "Cat HYDO Advanced 10 (309-6942) | Estende intervalo para 6000h"
+    comando_final: "Cat TDTO SAE 50 (7X-7858)"
+    comando_giro: "Cat TDTO SAE 50 (7X-7858)"
+
+  graxas_recomendadas:
+    articulacoes: "Graxa 5% Molibdenio (183-3424) - 14oz cartucho"
+    mancal_giro: "Graxa Cat para rolamentos"
+    engrenagem_giro: "Cat 5P-0960"
+
+  ferramentas_basicas:
+    bomba_lubrificacao: "8F-9866"
+    chave_filtro_cinta: "118-3630"
+    cabo_t_meia: "213-1985"
+    soquete_estriado_30mm: "9U-6533"
+    valvula_coleta: "8T-9208"
+    kit_coleta: "1Z-0123"
+
+  cinto_seguranca:
+    substituir: "3 anos apos instalacao"
+    inspecionar: "Antes de cada operacao"
+    nota: "Se cadarco desgastado ou desfiado, substituir imediatamente."

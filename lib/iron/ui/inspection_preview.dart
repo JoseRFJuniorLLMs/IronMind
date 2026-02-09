@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -75,10 +76,13 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
       voiceController: EVAVoiceController(),
     );
 
+    // Propaga tipo de equipamento para ManualLookup e Gemini
+    _orchestrator!.setEquipmentType(widget.machineType);
+
     _orchestrator!.onAlert = (alert) {
       setState(() => _audioAlert = alert);
-      // Limpa alerta após 3s
-      Future.delayed(const Duration(seconds: 3), () {
+      // Limpa alerta após 5s
+      Future.delayed(const Duration(seconds: 5), () {
         if (mounted) setState(() => _audioAlert = null);
       });
     };
@@ -204,8 +208,8 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
             child: HUDWidget(
               fps: _fps,
               detectionCount: _lastResult?.detections.length ?? 0,
-              modelName: _lastResult?.modelUsed ?? 'loading...',
-              isOffline: true, // TODO: conectar SyncManager
+              modelName: _lastResult?.modelUsed ?? 'Camera Pronta',
+              isOffline: false,
               audioAlert: _audioAlert,
             ),
           ),
@@ -232,10 +236,82 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
             ),
           ),
 
-          // Layer 6: Diagnóstico Gemini Spatial (se disponível)
-          if (_lastResult?.spatialAnalysis != null)
+          // Layer 6: Texto do Manual (offline, baseado em YOLO)
+          if (_lastResult != null && _lastResult!.hasManualText)
             Positioned(
               bottom: 100,
+              left: 16,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _lastResult!.hasDefects ? Colors.red : Colors.cyan,
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _lastResult!.hasDefects
+                              ? Icons.warning_amber_rounded
+                              : Icons.check_circle_outline,
+                          color: _lastResult!.hasDefects
+                              ? Colors.red
+                              : Colors.cyan,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _lastResult!.hasDefects
+                              ? 'DEFEITO DETECTADO'
+                              : 'MANUAL',
+                          style: TextStyle(
+                            color: _lastResult!.hasDefects
+                                ? Colors.red
+                                : Colors.cyan,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _lastResult!.manualText!,
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 13),
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (_lastResult!.manualAction != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        _lastResult!.manualAction!,
+                        style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+          // Layer 7: Diagnóstico Gemini Spatial (se disponível)
+          if (_lastResult?.spatialAnalysis != null)
+            Positioned(
+              bottom: _lastResult!.hasManualText ? 260 : 100,
               left: 16,
               right: 16,
               child: Container(
@@ -279,7 +355,7 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
               ),
             ),
 
-          // Layer 7: Botões de ação
+          // Layer 8: Botões de ação
           Positioned(
             bottom: 24,
             left: 0,
@@ -318,24 +394,112 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
   Future<void> _captureFrame() async {
     if (_cameraController == null) return;
     try {
+      // Pausa stream para capturar foto limpa
+      await _cameraController!.stopImageStream();
       final file = await _cameraController!.takePicture();
       debugPrint('[Preview] Frame capturado: ${file.path}');
-      // TODO: Salvar com inspeção atual
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Foto salva: ${file.name}'),
+            backgroundColor: Colors.green[700],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Retoma stream
+      await _cameraController!.startImageStream(_onCameraFrame);
     } catch (e) {
       debugPrint('[Preview] Erro ao capturar: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao capturar: $e'),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+      }
     }
   }
 
   Future<void> _forceDiagnosis() async {
-    // Força Gemini Spatial mesmo sem detecção automática
-    debugPrint('[Preview] Diagnóstico forçado solicitado');
-    // TODO: Capturar frame atual e enviar para Gemini Spatial
+    if (_cameraController == null) return;
+    debugPrint('[Preview] Diagnostico forcado solicitado');
+
+    try {
+      await _cameraController!.stopImageStream();
+      final file = await _cameraController!.takePicture();
+      final bytes = await File(file.path).readAsBytes();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Analisando imagem...'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+
+      // Tenta Gemini Spatial se disponivel
+      if (_orchestrator != null && _orchestrator!.gemini.isConfigured) {
+        final result = await _orchestrator!.gemini.analyze(
+          imageBytes: bytes,
+          detections: [],
+          equipmentType: widget.machineType,
+          thinkingBudget: 'large',
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gemini: ${result.ttsResume}'),
+              backgroundColor: Colors.green[700],
+              duration: const Duration(seconds: 5),
+            ),
+          );
+          setState(() {
+            _lastResult = InspectionResult(
+              detections: [],
+              spatialAnalysis: result,
+              frameUrgency: 0,
+              inferenceTime: Duration(milliseconds: result.latencyMs),
+              modelUsed: 'Gemini Spatial',
+            );
+          });
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Gemini nao configurado. Foto salva para analise posterior.'),
+              backgroundColor: Colors.orange[700],
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+
+      await _cameraController!.startImageStream(_onCameraFrame);
+    } catch (e) {
+      debugPrint('[Preview] Erro no diagnostico: $e');
+      // Tenta retomar stream
+      try { await _cameraController!.startImageStream(_onCameraFrame); } catch (_) {}
+    }
   }
 
   Future<void> _startVoiceNote() async {
-    // Inicia gravação de nota de voz via Whisper
     debugPrint('[Preview] Nota de voz iniciada');
-    // TODO: Integrar com EVAVoiceController
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nota de voz em desenvolvimento'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override

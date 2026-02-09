@@ -169,7 +169,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           }),
                         ],
-                        style: AppTextStyles.accessibleNumber,
+                        style: AppTextStyles.accessibleNumber.copyWith(
+                          color: Colors.black87,
+                        ),
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
                           hintText: '000.000.000-00',

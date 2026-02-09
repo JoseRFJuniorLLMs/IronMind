@@ -1,4 +1,4 @@
-package com.eva.br
+package com.ironmind.br
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -22,7 +22,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.eva.br/minimize"
+    private val CHANNEL = "com.ironmind.br/minimize"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -40,7 +40,7 @@ class MainActivity : FlutterActivity() {
         
         
         // 🔴 P1 FIX: New channel to launch app from background with FULL SCREEN
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.eva.br/app_launcher").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.ironmind.br/app_launcher").setMethodCallHandler { call, result ->
             if (call.method == "launchApp") {
                 try {
                     val intent = Intent(this, MainActivity::class.java).apply {

@@ -33,6 +33,7 @@ import 'presentation/screens/schedule/schedule_screen.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/splash/splash_screen.dart';
 import 'presentation/screens/settings/accessibility_settings_screen.dart';
+import 'iron/ui/inspection_preview.dart';
 import 'presentation/widgets/equipment_alert_overlay.dart';
 
 // 🔑 CHAVE GLOBAL PARA NAVEGAÇÃO
@@ -286,6 +287,13 @@ class _MyAppState extends State<MyApp> {
           path: '/accessibility',
           name: 'accessibility',
           builder: (context, state) => const AccessibilitySettingsScreen(),
+        ),
+        GoRoute(
+          path: '/inspection',
+          name: 'inspection',
+          builder: (context, state) => const InspectionPreviewScreen(
+            machineType: 'equipamento',
+          ),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

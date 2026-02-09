@@ -115,11 +115,11 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
         _addLog('App ID: $appId');
 
         // Verificar se package name está correto
-        if (packageName == 'com.eva.br') {
-          _addSuccess('Package name CORRETO: com.eva.br');
+        if (packageName == 'com.ironmind.br') {
+          _addSuccess('Package name CORRETO: com.ironmind.br');
         } else {
           _addError(
-            'Package name INCORRETO: $packageName (esperado: com.eva.br)',
+            'Package name INCORRETO: $packageName (esperado: com.ironmind.br)',
           );
         }
       }

@@ -1,0 +1,154 @@
+# Manual de Referencia - Componentes Universais
+# Fonte: Guia Pratico de Manutencao Cat 320D2 + Normas Gerais
+# Aplicavel a todos os tipos de equipamento pesado
+equipamento: universal
+fonte: "Guia Pratico de Manutencao - Escavadeira Hidraulica Cat 320D2"
+componentes:
+  correia_ok:
+    nome: Correia do Motor
+    estado: normal
+    fala: "Correia do motor em bom estado. Sem trincas ou desgaste visivel. Tensor automatico ajustando corretamente."
+    acao: "Nenhuma acao necessaria. Inspecionar a cada 500 horas conforme manual Cat."
+    intervalo: "500h"
+
+  correia_desgastada:
+    nome: Correia do Motor
+    estado: defeito
+    severidade: alta
+    fala: "Correia do motor com desgaste ou trincas. Manual Cat recomenda substituicao imediata. Part number 357-2637."
+    acao: "Destrancar e levantar capo. Girar tensor no sentido horario para remover correia. Instalar correia nova Cat 357-2637. Fechar capo."
+    prazo: "proxima parada"
+    pecas: "357-2637 Correia do Motor"
+
+  mangueira_ok:
+    nome: Mangueira Hidraulica
+    estado: normal
+    fala: "Mangueira hidraulica integra. Sem vazamentos, bolhas ou deformacoes. Conexoes firmes."
+    acao: "Nenhuma acao necessaria. Verificar a cada 250 horas."
+    intervalo: "250h"
+
+  mangueira_vazando:
+    nome: Mangueira Hidraulica
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO CRITICO. Vazamento na mangueira hidraulica. Nunca remova o bujao se o oleo estiver quente. Risco de queimadura e falha do sistema."
+    acao: "Parar operacao imediatamente. Estacionar em superficie plana. Desligar motor. Substituir mangueira. Verificar nivel do oleo hidraulico nas faixas inferior e superior."
+    prazo: "imediato"
+
+  filtro_ok:
+    nome: Filtro
+    estado: normal
+    fala: "Filtro em condicao adequada. Indicador de restricao na faixa verde. Fluxo normal."
+    acao: "Nenhuma acao necessaria. Trocar conforme intervalo Cat: filtro oleo motor a cada 500h, filtro retorno hidraulico a cada 1000h."
+    intervalo: "500h"
+
+  filtro_sujo:
+    nome: Filtro
+    estado: defeito
+    severidade: media
+    fala: "Filtro com restricao. Pistao amarelo do indicador na area vermelha. Substituir na proxima manutencao. Verificar se e filtro primario de combustivel, filtro de oleo ou filtro hidraulico."
+    acao: "Substituir filtro. Pressionar botao na parte superior do indicador para reiniciar. Verificar filtros: oleo motor Cat 322-3155, ar primario Cat 131-8822, ar secundario Cat 131-8821, retorno hidraulico Cat 179-9806."
+    prazo: "proxima manutencao"
+    pecas: "322-3155 Filtro Oleo Motor | 131-8822 Filtro Ar Primario | 131-8821 Filtro Ar Secundario | 179-9806 Filtro Retorno Hidraulico"
+
+  parafuso_ok:
+    nome: Parafuso de Fixacao
+    estado: normal
+    fala: "Parafusos de fixacao com torque adequado. Sem sinais de afrouxamento."
+    acao: "Nenhuma acao necessaria. Verificar torque a cada 250 horas."
+
+  parafuso_solto:
+    nome: Parafuso de Fixacao
+    estado: defeito
+    severidade: alta
+    fala: "Parafuso solto detectado. Risco de vibracao excessiva e dano estrutural. Verificar se ha outros parafusos adjacentes soltos."
+    acao: "Reapertar com torquimetro conforme especificacao Cat. Verificar rosca e arruela. Inspecionar todos os parafusos adjacentes. Se rosca danificada, substituir."
+    prazo: "antes da proxima operacao"
+
+  pneu_ok:
+    nome: Pneu
+    estado: normal
+    fala: "Pneu com banda de rodagem adequada. Pressao dentro da especificacao."
+    acao: "Verificar pressao com manometro. Proxima inspecao em 250 horas."
+
+  pneu_careca:
+    nome: Pneu
+    estado: defeito
+    severidade: alta
+    fala: "Pneu com banda de rodagem abaixo do limite. Risco de derrapagem e acidente."
+    acao: "Substituir pneu. Verificar alinhamento e balanceamento. Registrar quilometragem. Nao operar com pneu careca."
+    prazo: "imediato"
+
+  oleo_ok:
+    nome: Sistema de Lubrificacao
+    estado: normal
+    fala: "Nivel de oleo adequado. Vareta de nivel entre marcas H e L. Sem vazamentos visiveis. Oleo com coloracao normal."
+    acao: "Nenhuma acao necessaria. Proximo check conforme manual Cat: motor a cada 10h, hidraulico a cada 500h."
+    intervalo: "10h motor, 500h hidraulico"
+
+  oleo_vazando:
+    nome: Sistema de Lubrificacao
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Vazamento de oleo detectado. Oleo quente e componentes quentes podem causar ferimentos. Nao permita contato com a pele."
+    acao: "Desligar motor. Identificar ponto de vazamento. Drenar oleo quente em recipiente adequado. Completar nivel com oleo correto: motor Cat 15W40 part 3E-9848, hidraulico Cat HYDO Advanced 10 part 309-6942."
+    prazo: "imediato"
+    pecas: "3E-9848 Oleo Motor Cat 15W40 | 309-6942 Oleo Hidraulico Cat HYDO Advanced 10"
+
+  corrosao_leve:
+    nome: Superficie Metalica
+    estado: defeito
+    severidade: baixa
+    fala: "Corrosao superficial detectada. Monitorar evolucao. Verificar se ha acumulo de umidade ou contaminacao."
+    acao: "Limpar area com pano. Aplicar tratamento anticorrosivo. Fotografar para comparacao futura. Verificar vedacoes adjacentes."
+    prazo: "proxima manutencao"
+
+  corrosao_grave:
+    nome: Superficie Metalica
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Corrosao grave com comprometimento estrutural. Verificar se ha risco de ruptura sob carga."
+    acao: "Avaliar integridade estrutural. Substituir componente se necessario. Consultar engenheiro qualificado. Nao operar sob carga."
+    prazo: "imediato"
+
+  solda_ok:
+    nome: Ponto de Solda
+    estado: normal
+    fala: "Solda integra. Sem trincas ou porosidades visiveis."
+    acao: "Nenhuma acao necessaria. Inspecionar visualmente a cada 500 horas."
+
+  solda_trincada:
+    nome: Ponto de Solda
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO CRITICO. Trinca na solda detectada. Risco de ruptura sob carga. Pode comprometer estrutura da lanca, braco ou cacamba."
+    acao: "Parar operacao com carga. Avaliar extensao da trinca. Ressoldar com solda qualificada ou substituir componente. Inspecao por liquido penetrante ou ultrassom recomendada."
+    prazo: "imediato"
+
+  vedacao_ok:
+    nome: Vedacao e Retentores
+    estado: normal
+    fala: "Vedacao e retentores integros. Sem sinais de vazamento."
+    acao: "Nenhuma acao necessaria."
+
+  vedacao_comprometida:
+    nome: Vedacao e Retentores
+    estado: defeito
+    severidade: alta
+    fala: "Vedacao comprometida. Possivel vazamento de fluido. Verificar retentores do cilindro hidraulico e do motor de deslocamento."
+    acao: "Substituir vedacao ou retentores. Limpar superficies de contato. Se haste do cilindro danificada, substituir cilindro completo."
+    prazo: "proxima parada"
+
+  conexao_eletrica_ok:
+    nome: Conexao Eletrica e Bateria
+    estado: normal
+    fala: "Conexao eletrica firme. Terminais da bateria limpos. Sem sinais de oxidacao."
+    acao: "Nenhuma acao necessaria. Limpar terminais com pano e vaselina conforme manual Cat."
+
+  conexao_eletrica_solta:
+    nome: Conexao Eletrica e Bateria
+    estado: defeito
+    severidade: alta
+    fala: "Conexao eletrica solta ou corroida. Risco de mau contato e falha na partida. Gases de bateria sao inflamaveis, usar oculos protetores."
+    acao: "Desligar todos interruptores. Girar chave geral bateria para DESLIGAR. Desconectar cabo negativo primeiro, depois positivo. Limpar terminais com pano e vaselina. Reconectar positivo primeiro, depois negativo."
+    prazo: "antes da proxima operacao"

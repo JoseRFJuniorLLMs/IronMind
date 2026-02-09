@@ -11,7 +11,7 @@
 -dontwarn com.google.firebase.**
 
 # Whisper FFI
--keep class com.eva.br.** { *; }
+-keep class com.ironmind.br.** { *; }
 -keep class * extends dart.ffi.Opaque { *; }
 
 # Record Package

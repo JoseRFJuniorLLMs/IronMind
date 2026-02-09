@@ -61,6 +61,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1017997949026',
     projectId: 'eva-push-01',
     storageBucket: 'eva-push-01.firebasestorage.app',
-    iosBundleId: 'com.eva.br',
+    iosBundleId: 'com.ironmind.br',
   );
 }

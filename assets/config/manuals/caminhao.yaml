@@ -1,0 +1,61 @@
+# Manual de Referencia - Caminhoes
+# Componentes especificos de caminhoes pesados e fora-de-estrada
+equipamento: caminhao
+componentes:
+  freio_ok:
+    nome: Sistema de Freios
+    estado: normal
+    fala: "Sistema de freios em bom estado. Lonas ou pastilhas com espessura adequada. Discos sem desgaste excessivo. Freio de estacionamento funcionando."
+    acao: "Nenhuma acao necessaria. Inspecionar lonas a cada 500 horas. Testar freio de estacionamento antes de cada turno."
+    intervalo: "500h"
+
+  freio_gasto:
+    nome: Sistema de Freios
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO CRITICO. Freio com desgaste excessivo. Risco de falha na frenagem. Nao operar o veiculo ate substituicao."
+    acao: "Parar operacao imediatamente. Acionar freio de estacionamento. Substituir lonas ou pastilhas. Verificar discos e tambores quanto a desgaste e trincas. Verificar nivel do fluido de freio. Testar frenagem em area segura antes de operar."
+    prazo: "imediato"
+
+  suspensao_ok:
+    nome: Suspensao
+    estado: normal
+    fala: "Suspensao em bom estado. Amortecedores e molas sem deformacao. Buchas sem folga."
+    acao: "Nenhuma acao necessaria. Verificar amortecedores e molas a cada 500 horas. Lubrificar articulacoes."
+    intervalo: "500h"
+
+  suspensao_danificada:
+    nome: Suspensao
+    estado: defeito
+    severidade: alta
+    fala: "Suspensao danificada. Feixe de molas quebrado, amortecedor vazando ou bucha com folga. Risco de instabilidade com carga."
+    acao: "Nao trafegar com carga. Substituir componente danificado. Verificar alinhamento apos reparo. Se feixe de molas, substituir lado completo. Se amortecedor, substituir par."
+    prazo: "antes da proxima operacao"
+
+  escapamento_ok:
+    nome: Sistema de Escapamento
+    estado: normal
+    fala: "Sistema de escapamento integro. Sem vazamentos de gases. Fumaca com coloracao normal."
+    acao: "Nenhuma acao necessaria. Verificar suportes e bracadeiras a cada 500 horas."
+
+  escapamento_furado:
+    nome: Sistema de Escapamento
+    estado: defeito
+    severidade: media
+    fala: "Furo ou trinca no escapamento detectado. Vazamento de gases e aumento de ruido. Se fumaca escura, verificar tambem filtro de ar do motor."
+    acao: "Reparar ou substituir secao danificada. Verificar suportes e bracadeiras. Se fumaca escura no escape, inspecionar filtro de ar do motor. Verificar se ha risco de inalacao de gases na cabine."
+    prazo: "proxima manutencao"
+
+  carroceria_ok:
+    nome: Carroceria e Cacamba
+    estado: normal
+    fala: "Carroceria em bom estado. Sem amassados estruturais ou corrosao significativa. Soldas integras."
+    acao: "Nenhuma acao necessaria. Inspecionar soldas e pontos de fixacao a cada 500 horas."
+
+  carroceria_amassada:
+    nome: Carroceria e Cacamba
+    estado: defeito
+    severidade: media
+    fala: "Dano na carroceria detectado. Verificar se amassado compromete estrutura ou vedacao. Se corrosao presente, tratar para evitar propagacao."
+    acao: "Avaliar extensao do dano. Se comprometimento estrutural, reparar com solda qualificada. Se apenas estetico, programar reparo. Verificar se afeta vedacao de carga. Aplicar tratamento anticorrosivo em areas expostas."
+    prazo: "proxima parada programada"

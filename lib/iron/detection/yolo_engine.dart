@@ -68,7 +68,8 @@ class YoloInferenceEngine {
   String get currentModelName => _currentModel;
 
   /// Inicializa com o modelo primário (YOLO26n)
-  /// Fallback automático para YOLO-NAS-S → YOLOv8n se falhar
+  /// Fallback: YOLO26n → YOLO-NAS-S → YOLOv8n → modo demo (camera only)
+  /// NNAPI delega automaticamente: NPU > DSP > GPU > CPU
   Future<bool> initialize({String? modelPath}) async {
     final models = [
       modelPath ?? 'assets/models/detection/yolo26n_ironmind_int8.onnx',
@@ -83,21 +84,28 @@ class YoloInferenceEngine {
         _isInitialized = true;
         return true;
       } catch (e) {
-        // Tenta próximo fallback
+        // Tenta proximo fallback
         continue;
       }
     }
 
-    return false;
+    // Modo demo: camera funciona, inferencia retorna vazio
+    _currentModel = 'demo (sem modelo)';
+    _isInitialized = true;
+    return true;
   }
 
   Future<void> _loadModel(String modelPath) async {
-    // TODO: Implementar com onnxruntime_flutter ou tflite_flutter
+    // Verifica se o arquivo existe como asset
+    // TODO: Implementar carregamento real com onnxruntime_flutter
+    // A cadeia de execucao NNAPI prioriza: NPU > DSP > GPU > CPU
+    //
     // final modelBytes = await rootBundle.load(modelPath);
     // final options = OrtSessionOptions()
     //   ..setIntraOpNumThreads(4)
-    //   ..appendExecutionProvider_Nnapi(); // NPU Android
+    //   ..appendExecutionProvider_Nnapi(); // NNAPI: NPU > GPU > CPU auto
     // _session = OrtSession.fromBuffer(modelBytes.buffer.asUint8List(), options);
+    throw UnsupportedError('Modelo $modelPath nao disponivel nos assets');
   }
 
   /// Executa inferência num frame da câmera

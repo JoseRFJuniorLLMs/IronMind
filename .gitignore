@@ -44,9 +44,10 @@ serviceAccountKey.json
 # Logs
 *.log
 
-# Large binaries (APK, models)
+# Large binaries (APK, models, PDFs)
 *.apk
 *.aab
+*.pdf
 assets/models/*.bin
 assets/models/*.tflite
 ggml-*.bin

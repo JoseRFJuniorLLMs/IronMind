@@ -37,7 +37,7 @@ class CallProvider with ChangeNotifier {
 
   final ApiService _apiService = ApiService();
   final _platformChannel = const MethodChannel(
-    'com.eva.br/minimize',
+    'com.ironmind.br/minimize',
   ); // ✅ Channel para minimizar
   AudioPlayer? _ringtonePlayer;
 
@@ -448,10 +448,8 @@ class CallProvider with ChangeNotifier {
     try {
       // ✅ FIX: Pausar Sentinela ANTES de abrir câmera/microfone
       _logger.i('🛡️ Pausando Sentinela para vídeo chamada...');
-      final micReleased = await IronSentinelService.pause();
-      if (!micReleased) {
-        _logger.w('⚠️ Timeout aguardando liberação do mic, tentando mesmo assim...');
-      }
+      await IronSentinelService.pause();
+      _logger.i('✅ Sentinela pausada');
 
       // 1. Inicializar WebRTC (Agora com mic/câmera livres)
       await _webrtcService.initialize();
@@ -585,7 +583,9 @@ class CallProvider with ChangeNotifier {
           'session_id': sessionId,
           'payload': {
             'type': 'candidate',
-            'candidate': candidate.toMap(),
+            'candidate': candidate.candidate,
+            'sdpMid': candidate.sdpMid,
+            'sdpMLineIndex': candidate.sdpMLineIndex,
           }
         });
       };

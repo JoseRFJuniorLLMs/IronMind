@@ -1,9 +1,11 @@
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import '../detection/yolo_engine.dart';
 import '../segmentation/edgesam_segmenter.dart';
 import '../diagnosis/gemini_spatial_engine.dart';
 import '../voice/eva_voice_controller.dart';
+import 'manual_lookup_service.dart';
 import 'model_manager.dart';
 import 'uncertainty_analyzer.dart';
 
@@ -15,6 +17,8 @@ class InspectionResult {
   final double frameUrgency;
   final Duration inferenceTime;
   final String modelUsed;
+  final String? manualText;
+  final String? manualAction;
 
   InspectionResult({
     required this.detections,
@@ -23,11 +27,14 @@ class InspectionResult {
     required this.frameUrgency,
     required this.inferenceTime,
     required this.modelUsed,
+    this.manualText,
+    this.manualAction,
   });
 
   bool get hasDefects => detections.any((d) => d.isDefect);
   int get defectCount => detections.where((d) => d.isDefect).length;
   bool get hasSpatialAnalysis => spatialAnalysis != null && spatialAnalysis!.components.isNotEmpty;
+  bool get hasManualText => manualText != null && manualText!.isNotEmpty;
 }
 
 /// Pipeline principal de inspeção: Camera → YOLO → EdgeSAM → Gemini Spatial → TTS
@@ -36,6 +43,7 @@ class InspectionOrchestrator {
   final ModelManager modelManager;
   final UncertaintyAnalyzer uncertainty;
   final GeminiSpatialEngine gemini;
+  final ManualLookupService manualLookup;
   final EVAVoiceController? voiceController;
 
   // Estado
@@ -55,28 +63,34 @@ class InspectionOrchestrator {
     ModelManager? modelManager,
     UncertaintyAnalyzer? uncertainty,
     GeminiSpatialEngine? gemini,
+    ManualLookupService? manualLookup,
     this.voiceController,
   })  : modelManager = modelManager ?? ModelManager(),
         uncertainty = uncertainty ?? UncertaintyAnalyzer(),
-        gemini = gemini ?? GeminiSpatialEngine();
+        gemini = gemini ?? GeminiSpatialEngine(),
+        manualLookup = manualLookup ?? ManualLookupService();
 
   bool get isRunning => _isRunning;
   int get frameCount => _frameCount;
   int get defectsFound => _defectsFound;
   int get geminiCalls => _geminiCalls;
 
-  /// Define tipo de equipamento para contexto do Gemini
+  /// Define tipo de equipamento para contexto do Gemini e ManualLookup
   void setEquipmentType(String type) {
     _equipmentType = type;
+    manualLookup.setEquipmentType(type);
     debugPrint('[Orchestrator] Equipment type: $type');
   }
 
-  /// Inicializa o pipeline (carrega modelos warm)
+  /// Inicializa o pipeline (carrega modelos warm + manuais)
   Future<void> initialize() async {
     debugPrint('[Orchestrator] Inicializando pipeline de inspeção...');
-    await modelManager.initialize();
+    await Future.wait([
+      modelManager.initialize(),
+      manualLookup.initialize(),
+    ]);
     _sessionStart = DateTime.now();
-    debugPrint('[Orchestrator] Pipeline pronto');
+    debugPrint('[Orchestrator] Pipeline pronto. Manuais: ${manualLookup.entryCount} entradas');
   }
 
   /// Processa um frame da câmera (chamado a cada ~33ms para 30fps)
@@ -110,7 +124,7 @@ class InspectionOrchestrator {
           mask = await modelManager.edgeSAM.segment(
             imageBytes,
             center,
-            const Size(640, 640),
+            Size(640, 640),
           );
         }
       } catch (e) {
@@ -146,14 +160,34 @@ class InspectionOrchestrator {
         }
       }
 
-      // ─── STAGE 4: Alerta por voz (se urgência alta) ───
+      // ─── STAGE 4: Alerta por voz com texto do manual ───
       if (uncertainty.shouldAlert(detections) && voiceController != null) {
-        final alertMsg = spatialResult != null && spatialResult.anomalies.isNotEmpty
-            ? spatialResult.ttsResume
-            : _buildAlertMessage(topDefect);
+        // Prioridade: Gemini Spatial > Manual YAML > Mensagem genérica
+        String alertMsg;
+        if (spatialResult != null && spatialResult.anomalies.isNotEmpty) {
+          alertMsg = spatialResult.ttsResume;
+        } else if (manualLookup.isLoaded) {
+          alertMsg = manualLookup.generateTTS(defects);
+        } else {
+          alertMsg = _buildAlertMessage(topDefect);
+        }
         onAlert?.call(alertMsg);
         voiceController!.speak(alertMsg);
       }
+    }
+
+    // ─── STAGE 5: Texto do manual para display ───
+    String? manualText;
+    String? manualAction;
+    if (manualLookup.isLoaded && detections.isNotEmpty) {
+      manualText = manualLookup.generateTTS(detections);
+      // Pega ação do defeito mais urgente
+      final topDetection = detections.firstWhere(
+        (d) => d.isDefect,
+        orElse: () => detections.first,
+      );
+      final entry = manualLookup.lookupDetection(topDetection);
+      manualAction = entry?.acao;
     }
 
     stopwatch.stop();
@@ -165,6 +199,8 @@ class InspectionOrchestrator {
       frameUrgency: urgency,
       inferenceTime: stopwatch.elapsed,
       modelUsed: modelManager.yoloEngine.currentModelName,
+      manualText: manualText,
+      manualAction: manualAction,
     );
 
     onResult?.call(result);

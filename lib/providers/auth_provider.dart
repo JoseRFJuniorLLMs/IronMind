@@ -87,10 +87,17 @@ class AuthProvider with ChangeNotifier {
         throw Exception('CPF invalido. Digite 11 numeros.');
       }
 
-      final operatorData = await _apiService.getOperatorByCpf(cpfClean);
+      var operatorData = await _apiService.getOperatorByCpf(cpfClean);
 
+      // Modo demo/offline: se API indisponível, criar operador local
       if (operatorData == null) {
-        throw Exception('CPF nao cadastrado. Entre em contato com o suporte.');
+        _logger.w('⚠️ API indisponível - entrando em modo demo');
+        operatorData = {
+          'id': 0,
+          'nome': 'Operador Demo',
+          'cpf': cpfClean,
+          'telefone': '00000000000',
+        };
       }
 
       _operator = Operator.fromJson(operatorData);

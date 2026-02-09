@@ -1,0 +1,148 @@
+# Manual de Referencia - Mineracao / Escavadeira Hidraulica
+# Fonte: Guia Pratico de Manutencao Cat 320D2 (236 paginas)
+# Escavadeira Hidraulica Cat 320D2 - Componentes Especificos
+equipamento: mineracao
+modelo_referencia: "Cat 320D2"
+fonte: "Guia Pratico de Manutencao - Escavadeira Hidraulica Cat 320D2"
+componentes:
+  esteira_ok:
+    nome: Esteira de Tracao (Material Rodante)
+    estado: normal
+    fala: "Esteira com tensao adequada. Deflexao medida entre 40 e 55 milimetros, dentro da especificacao Cat. Sapatas sem desgaste excessivo. Roletes, rodas guia e rodas motrizes em bom estado."
+    acao: "Nenhuma acao necessaria. Verificar tensao a cada 10 horas. Ouvir ruidos anormais ao mover lentamente."
+    intervalo: "10h"
+
+  esteira_desgastada:
+    nome: Esteira de Tracao (Material Rodante)
+    estado: defeito
+    severidade: alta
+    fala: "Esteira com desgaste. Verificar deflexao entre rolete superior e roda guia. Especificacao Cat: 40 a 55 milimetros. Verificar sapatas, roletes, rodas guia e rodas motrizes do comando."
+    acao: "Operar maquina para posicionar pino sobre rolete superior frontal. Desligar motor. Medir deflexao com regua reta. Se fora da faixa 40-55mm: para apertar, adicionar graxa pela graxeira. Para afrouxar, abrir valvula de alivio no maximo uma volta. Apertar valvula para 34 Nm. Se desgaste severo, consultar assistencia."
+    prazo: "200 horas"
+    especificacao: "Deflexao: 40-55mm | Torque valvula: 34 +/- 5 Nm"
+
+  cacamba_ok:
+    nome: Cacamba e Articulacoes
+    estado: normal
+    fala: "Cacamba em bom estado. Articulacoes lubrificadas. Sem trincas ou deformacoes. Graxeiras limpas."
+    acao: "Lubrificar graxeiras das articulacoes a cada 10 horas com graxa 5 por cento molibdenio. Limpar todas as graxeiras antes da aplicacao. Usar bomba de lubrificacao Cat 8F-9866."
+    intervalo: "10h"
+    pecas: "8F-9866 Bomba de Lubrificacao | 183-3424 Graxa 5Moly 397g"
+
+  cacamba_trincada:
+    nome: Cacamba e Articulacoes
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Trinca na cacamba detectada. Risco de propagacao sob carga. Verificar tambem articulacoes de controle e pinos."
+    acao: "Parar operacao. Avaliar extensao da trinca. Inspecao por liquido penetrante recomendada. Reparar com solda qualificada ou substituir. Encher completamente com graxa todas as cavidades da articulacao durante reinstalacao."
+    prazo: "imediato"
+
+  cilindro_ok:
+    nome: Cilindro Hidraulico (Lanca/Braco/Cacamba)
+    estado: normal
+    fala: "Cilindros hidraulicos operando normalmente. Sem vazamentos nas hastes. Articulacoes da lanca e do braco lubrificadas. Retentores integros."
+    acao: "Lubrificar graxeiras dos cilindros a cada 10 horas. Aplicar graxa na base de cada cilindro da lanca, na haste do cilindro da lanca, no cabecote do braco e na haste do cilindro do braco. Usar graxa 5 por cento molibdenio."
+    intervalo: "10h"
+
+  cilindro_vazando:
+    nome: Cilindro Hidraulico (Lanca/Braco/Cacamba)
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Vazamento no cilindro hidraulico. Perda de forca e risco de falha. Oleo quente pode causar queimaduras graves. Nao toque na haste."
+    acao: "Parar operacao. Abaixar cacamba ate o solo com braco na posicao vertical. Desligar motor. Substituir retentores. Se haste danificada, substituir cilindro completo. Verificar nivel do oleo hidraulico: maquina fria na faixa inferior, maquina quente na faixa superior."
+    prazo: "imediato"
+
+  rolamento_ok:
+    nome: Mancal de Giro
+    estado: normal
+    fala: "Mancal de giro operando normalmente. Sem vibracao anormal. Graxa presente nos retentores. Nivel de oleo do comando de giro entre marcas ADD e FULL."
+    acao: "Lubrificar mancal de giro a cada 250 horas. Limpar graxeiras antes. Aplicar graxa ate sair pelos retentores do mancal. Nao aplicar graxa em excesso."
+    intervalo: "250h"
+
+  rolamento_ruidoso:
+    nome: Mancal de Giro
+    estado: defeito
+    severidade: alta
+    fala: "Mancal de giro com ruido anormal. Possivel desgaste das pistas. Verificar tambem nivel de oleo do comando de giro e engrenagem de giro."
+    acao: "Lubrificar mancal com graxa Cat. Verificar nivel de oleo do comando de giro com vareta entre marcas ADD e FULL. Inspecionar engrenagem de giro: verificar se ha ondas de graxa presentes. Areas manchadas ou sem ondas indicam falta de graxa. Adicionar graxa Cat 5P-0960 se necessario."
+    prazo: "100 horas"
+    pecas: "5P-0960 Graxa Engrenagem Giro"
+
+  britador_ok:
+    nome: Sistema de Arrefecimento e Condensador
+    estado: normal
+    fala: "Sistema de arrefecimento operando normalmente. Nivel do liquido arrefecedor entre marcas FULL e LOW. Condensador limpo, sem detritos."
+    acao: "Verificar nivel arrefecedor a cada 10 horas. Limpar condensador com agua limpa quando necessario. Nunca abrir tampa com sistema quente, sistema pressurizado pode causar queimaduras."
+    intervalo: "10h"
+
+  britador_desgastado:
+    nome: Sistema de Arrefecimento e Condensador
+    estado: defeito
+    severidade: media
+    fala: "Sistema de arrefecimento com nivel baixo ou condensador obstruido. Verificar se liquido arrefecedor esta entre marcas FULL e LOW. Se condensador sujo, limpar com agua."
+    acao: "Parar motor. Esperar resfriar. Afrouxar tampa lentamente para aliviar pressao. Completar nivel de arrefecedor. Limpar condensador com agua, nao usar escova dura para nao danificar aletas. Verificar mangueiras e conexoes."
+    prazo: "proxima parada"
+
+# Sistemas adicionais Cat 320D2
+sistemas_referencia:
+  sistema_hidraulico:
+    descricao: "Verificar nivel do oleo hidraulico. Maquina em solo nivelado, cacamba no solo, braco vertical."
+    intervalos:
+      verificar_nivel: "10h (a cada inicio de operacao)"
+      trocar_filtro_retorno: "1000h"
+      trocar_filtro_piloto: "500h"
+      trocar_oleo: "2000h (Cat HYDO Advanced 10 estende para 6000h com analise SOS)"
+    oleo: "Cat HYDO Advanced 10 (309-6942)"
+
+  motor:
+    descricao: "Motor diesel. Verificar nivel de oleo no carter com vareta."
+    intervalos:
+      verificar_nivel: "10h"
+      trocar_oleo_filtro: "500h"
+      verificar_folga_valvulas: "250h iniciais, depois 2000h"
+    oleo: "Cat 15W40 (3E-9848)"
+    filtro: "322-3155"
+
+  combustivel:
+    descricao: "Sistema de combustivel com separador de agua."
+    intervalos:
+      drenar_agua_separador: "10h"
+      drenar_tanque: "10h"
+      trocar_filtro_primario: "500h"
+      trocar_filtro_secundario: "500h"
+
+  articulacoes:
+    descricao: "Articulacoes da lanca, braco e cacamba."
+    intervalos:
+      lubrificar: "10h"
+    graxa: "5% Molibdenio (183-3424)"
+    ferramenta: "Bomba lubrificacao 8F-9866"
+    nota: "Aplicar graxa com lanca levantada E com lanca abaixada apoiada no solo para lubrificacao completa dos rolamentos."
+
+  comando_final:
+    descricao: "Comando final de deslocamento (um em cada lado)."
+    intervalos:
+      verificar_nivel: "500h"
+      trocar_oleo: "1000h"
+      obter_amostra: "500h"
+    oleo: "Cat TDTO SAE 50 (7X-7858)"
+    nota: "Se enchimento lento, rotacionar comando final para distanciar engrenagem planetaria do bocal."
+
+  filtros_ar:
+    descricao: "Filtros de ar do motor e da cabine."
+    intervalos:
+      limpar_filtro_cabine_recirculacao: "10h"
+      limpar_filtro_ar_cabine: "500h"
+      limpar_filtro_primario_motor: "500h ou quando indicador alertar"
+      substituir_filtro_secundario_motor: "junto com primario"
+    filtro_cabine: "293-1184"
+    filtro_primario: "131-8822"
+    filtro_secundario: "131-8821"
+    nota: "Nunca limpar ou reutilizar filtro secundario. Sempre substituir."
+
+  bateria:
+    descricao: "Bateria e cabos."
+    intervalos:
+      limpar_terminais: "500h"
+      inspecionar: "2000h"
+    nota: "Gases inflamaveis. Usar oculos protetores. Desconectar negativo primeiro, reconectar por ultimo."

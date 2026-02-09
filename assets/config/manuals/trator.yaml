@@ -1,0 +1,64 @@
+# Manual de Referencia - Tratores
+# Componentes especificos de tratores agricolas e de esteira
+# Referencia cruzada: Manual Cat 320D2 para componentes similares
+equipamento: trator
+componentes:
+  implemento_ok:
+    nome: Implemento (Lamina/Grade/Ripper)
+    estado: normal
+    fala: "Implemento em bom estado. Fixacao firme. Pinos e travas sem folga. Sem deformacoes."
+    acao: "Nenhuma acao necessaria. Verificar pinos de fixacao e graxeiras a cada 10 horas."
+    intervalo: "10h"
+
+  implemento_danificado:
+    nome: Implemento (Lamina/Grade/Ripper)
+    estado: defeito
+    severidade: alta
+    fala: "Implemento danificado. Verificar pontos de fixacao, pinos, soldas e deformacoes. Risco de desprendimento durante operacao."
+    acao: "Parar operacao. Abaixar implemento ate o solo. Inspecionar pinos de fixacao e soldas. Verificar se ha trincas nos pontos de ancoragem. Substituir pinos gastos. Se deformacao severa, substituir implemento."
+    prazo: "antes da proxima operacao"
+
+  eixo_carda_ok:
+    nome: Eixo Cardan e Transmissao
+    estado: normal
+    fala: "Eixo cardan operando normalmente. Cruzetas sem folga. Sem vibracoes anormais. Lubrificacao adequada."
+    acao: "Lubrificar cruzetas do cardan a cada 50 horas. Verificar torque dos parafusos de fixacao."
+    intervalo: "50h"
+
+  eixo_carda_desgastado:
+    nome: Eixo Cardan e Transmissao
+    estado: defeito
+    severidade: alta
+    fala: "Eixo cardan com desgaste. Possivel folga nas cruzetas ou desbalanceamento. Vibracao excessiva pode danificar transmissao."
+    acao: "Verificar folga nas cruzetas. Se cruzeta com folga, substituir. Verificar balanceamento do cardan. Inspecionar flanges e parafusos. Verificar estado do protetor do cardan."
+    prazo: "100 horas"
+
+  hidraulico_ok:
+    nome: Sistema Hidraulico do Trator
+    estado: normal
+    fala: "Sistema hidraulico do trator operando normalmente. Nivel de oleo adequado. Sem vazamentos nas mangueiras ou conexoes."
+    acao: "Verificar nivel de oleo hidraulico a cada 10 horas. Manter entre marcas do visor. Verificar mangueiras e conexoes visualmente."
+    intervalo: "10h"
+
+  hidraulico_vazando:
+    nome: Sistema Hidraulico do Trator
+    estado: defeito
+    severidade: critica
+    fala: "ATENCAO. Vazamento no sistema hidraulico do trator. Verificar mangueiras, conexoes e cilindros do implemento. Oleo quente causa queimaduras."
+    acao: "Desligar motor. Abaixar implemento ate o solo. Identificar ponto do vazamento. Substituir mangueira ou conexao danificada. Completar nivel de oleo hidraulico. Nao operar com nivel baixo."
+    prazo: "imediato"
+
+  lamina_ok:
+    nome: Lamina (Trator de Esteira)
+    estado: normal
+    fala: "Lamina em bom estado. Bordas cortantes sem desgaste excessivo. Fixacao firme ao braco do trator."
+    acao: "Verificar desgaste das bordas cortantes a cada 250 horas. Lubrificar articulacoes."
+    intervalo: "250h"
+
+  lamina_gasta:
+    nome: Lamina (Trator de Esteira)
+    estado: defeito
+    severidade: media
+    fala: "Lamina com desgaste nas bordas cortantes. Reducao de eficiencia de corte e nivelamento."
+    acao: "Avaliar desgaste. Se bordas cortantes reversiveis, inverter posicao. Caso contrario, substituir bordas. Verificar parafusos de fixacao. Inspecionar bracos de sustentacao."
+    prazo: "proxima parada programada"
