@@ -3,7 +3,7 @@ import '../../core/accessibility/accessibility_helper.dart';
 
 /// Accessible button widget that ensures minimum touch target size
 /// Follows WCAG 2.1 Level AA guidelines (48x48dp minimum)
-/// Extra large for elderly users (64x64dp recommended)
+/// Extra large for field operators (64x64dp recommended)
 class AccessibleButton extends StatelessWidget {
   final Widget child;
   final VoidCallback? onPressed;
@@ -140,7 +140,7 @@ class MinimumTouchTarget extends StatelessWidget {
   }
 }
 
-/// Large emergency button for elderly users
+/// Large emergency button for field operators
 /// Extra-large touch target (128x128dp) with high contrast
 class EmergencyButton extends StatelessWidget {
   final VoidCallback? onPressed;

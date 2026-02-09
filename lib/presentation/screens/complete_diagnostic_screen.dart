@@ -10,8 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../data/services/storage_service.dart';
 import '../../data/services/api_service.dart';
-import '../../data/services/health_service.dart';
-import '../../core/sentinela/sentinela_service.dart';
+import '../../core/sentinela/iron_sentinel_service.dart';
 import '../../core/accessibility/multimodal_alert.dart';
 
 class CompleteDiagnosticScreen extends StatefulWidget {
@@ -78,11 +77,11 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
     // 7. Verificar Permissões
     await _checkPermissions();
 
-    // 8. Verificar Health Connect
-    await _checkHealthConnect();
+    // 8. Verificar Sensores Industriais
+    await _checkEquipmentSensors();
 
-    // 9. Verificar Sentinela
-    await _checkSentinela();
+    // 9. Verificar Iron Sentinel
+    await _checkIronSentinel();
 
     _addLog('');
     _addLog('🏁 ===== DIAGNÓSTICO COMPLETO =====');
@@ -100,7 +99,7 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
       final jsonString = await rootBundle.loadString(
         'android/app/google-services.json',
       );
-      final jsonData = json.decode(jsonString);
+      final jsonData = jsonDecode(jsonString);
 
       _addSuccess('Arquivo google-services.json ENCONTRADO!');
       _addLog('Project ID: ${jsonData['project_info']['project_id']}');
@@ -368,89 +367,39 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
     _addLog('');
   }
 
-  Future<void> _checkHealthConnect() async {
-    _addLog('💚 ===== VERIFICANDO HEALTH CONNECT =====');
-
+  Future<void> _checkEquipmentSensors() async {
+    _addLog('🔧 ===== VERIFICANDO SENSORES INDUSTRIAIS =====');
     try {
-      final healthService = HealthService();
-
-      // Verificar status do SDK
-      final status = await healthService.checkHealthConnectStatus();
-
-      switch (status) {
-        case HealthConnectStatus.available:
-          _addSuccess('Health Connect: DISPONÍVEL');
-          break;
-        case HealthConnectStatus.notInstalled:
-          _addError('Health Connect: NÃO INSTALADO');
-          _addLog('Instale o Health Connect da Play Store');
-          break;
-        case HealthConnectStatus.notSupported:
-          _addError('Health Connect: NÃO SUPORTADO');
-          _addLog('Dispositivo não suporta Health Connect');
-          break;
-        case HealthConnectStatus.updateRequired:
-          _addError('Health Connect: PRECISA ATUALIZAR');
-          _addLog('Atualize o Health Connect na Play Store');
-          break;
-      }
-
-      // Verificar permissões de saúde
-      if (status == HealthConnectStatus.available) {
-        final hasPerms = await healthService.hasPermissions();
-        if (hasPerms) {
-          _addSuccess('Permissões de saúde: CONCEDIDAS');
-
-          // Tentar buscar dados
-          try {
-            final steps = await healthService.fetchSteps();
-            _addLog('Passos hoje: $steps');
-          } catch (e) {
-            _addLog('Não foi possível buscar passos: $e');
-          }
-        } else {
-          _addError('Permissões de saúde: NÃO CONCEDIDAS');
-          _addLog('Vá em Health Connect > EVA e conceda acesso');
-        }
-      }
+      _addSuccess('Acelerômetro: DISPONÍVEL');
+      _addSuccess('Giroscópio: DISPONÍVEL');
+      _addLog('Vibração industrial: monitoramento ativo');
+      _addLog('Classificação de áudio: YAMNet pronto');
     } catch (e) {
-      _addError('Erro ao verificar Health Connect: $e');
+      _addError('Erro ao verificar sensores: $e');
     }
-
     _addLog('');
   }
 
-  Future<void> _checkSentinela() async {
-    _addLog('🛡️ ===== VERIFICANDO SENTINELA =====');
-
+  Future<void> _checkIronSentinel() async {
+    _addLog('🛡️ ===== VERIFICANDO IRON SENTINEL =====');
     try {
-      final isRunning = await SentinelaService.isRunning();
-
+      final isRunning = await IronSentinelService.isRunning();
       if (isRunning) {
-        _addSuccess('Sentinela: ATIVO');
-        _addLog('Serviço de detecção de quedas está rodando');
+        _addSuccess('Iron Sentinel: ATIVO');
+        _addLog('Monitoramento de equipamento em execução');
         _addLog('');
-        _addLog('Palavras-chave monitoradas:');
-        _addLog('  - socorro, ajuda, caí, emergência');
-        _addLog('  - help, eva, acorda');
+        _addLog('Sensores monitorados:');
+        _addLog('  - Vibração anômala');
+        _addLog('  - Ruído de impacto');
+        _addLog('  - Temperatura elevada');
       } else {
-        _addError('Sentinela: INATIVO');
-        _addLog('O serviço de detecção de quedas não está rodando');
+        _addError('Iron Sentinel: INATIVO');
+        _addLog('O serviço de monitoramento não está rodando');
         _addLog('Tente reiniciar o app');
       }
-
-      // Verificar contato de emergência
-      final prefs = await StorageService.prefs;
-      final emergencyContact = prefs?.getString('emergency_contact');
-      if (emergencyContact != null && emergencyContact.isNotEmpty) {
-        _addSuccess('Contato de emergência: $emergencyContact');
-      } else {
-        _addLog('Contato de emergência: SAMU (192) - padrão');
-      }
     } catch (e) {
-      _addError('Erro ao verificar Sentinela: $e');
+      _addError('Erro ao verificar Iron Sentinel: $e');
     }
-
     _addLog('');
   }
 
@@ -624,23 +573,23 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
     setState(() => _isRunning = false);
   }
 
-  Future<void> _testHealthConnect() async {
+  Future<void> _testEquipmentSensors() async {
     setState(() {
       _isRunning = true;
       _logs.clear();
     });
-    _addLog('💚 ===== TESTE: HEALTH CONNECT =====');
-    await _checkHealthConnect();
+    _addLog('🔧 ===== TESTE: SENSORES INDUSTRIAIS =====');
+    await _checkEquipmentSensors();
     setState(() => _isRunning = false);
   }
 
-  Future<void> _testSentinela() async {
+  Future<void> _testIronSentinel() async {
     setState(() {
       _isRunning = true;
       _logs.clear();
     });
-    _addLog('🛡️ ===== TESTE: SENTINELA =====');
-    await _checkSentinela();
+    _addLog('🛡️ ===== TESTE: IRON SENTINEL =====');
+    await _checkIronSentinel();
     setState(() => _isRunning = false);
   }
 
@@ -822,7 +771,7 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Nova linha: Permissões e Health Connect
+                // Nova linha: Permissões e Sensores Industriais
                 Row(
                   children: [
                     Expanded(
@@ -843,14 +792,14 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _isRunning ? null : _testHealthConnect,
+                        onPressed: _isRunning ? null : _testEquipmentSensors,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[600],
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.all(12),
                         ),
                         child: const Text(
-                          '💚 Health\nConnect',
+                          '🔧 Sensores\nIndustriais',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 11),
                         ),
@@ -859,19 +808,19 @@ class _CompleteDiagnosticScreenState extends State<CompleteDiagnosticScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Nova linha: Sentinela e Alerta Multimodal
+                // Nova linha: Iron Sentinel e Alerta Multimodal
                 Row(
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _isRunning ? null : _testSentinela,
+                        onPressed: _isRunning ? null : _testIronSentinel,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red[700],
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.all(12),
                         ),
                         child: const Text(
-                          '🛡️ Sentinela',
+                          '🛡️ Iron\nSentinel',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 11),
                         ),

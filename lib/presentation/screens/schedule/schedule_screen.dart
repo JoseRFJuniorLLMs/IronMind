@@ -167,7 +167,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
           Text(
             'Agenda',
-            style: AppTextStyles.elderlySubtitle.copyWith(color: Colors.white),
+            style: AppTextStyles.accessibleSubtitle.copyWith(color: Colors.white),
           ),
           const Spacer(),
           Semantics(
@@ -528,7 +528,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                       const SizedBox(width: 12),
                       Text(
                         'AGENDAR',
-                        style: AppTextStyles.elderlyButton.copyWith(
+                        style: AppTextStyles.accessibleButton.copyWith(
                           color: const Color(0xFF9F70D8),
                         ),
                       ),
@@ -648,7 +648,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 isHistory
                     ? 'Nenhum historico de chamadas'
                     : 'Nenhuma chamada agendada',
-                style: AppTextStyles.elderlyBody.copyWith(
+                style: AppTextStyles.accessibleBody.copyWith(
                   color: Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,
@@ -657,7 +657,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 const SizedBox(height: 12),
                 Text(
                   'Use o calendario acima para agendar',
-                  style: AppTextStyles.elderlyCaption,
+                  style: AppTextStyles.accessibleCaption,
                   textAlign: TextAlign.center,
                 ),
               ],

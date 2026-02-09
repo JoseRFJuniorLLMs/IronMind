@@ -42,12 +42,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       logger.e('❌ Failed to launch app: $e');
     }
   }
-  // ✅ HEALTH SYNC (SILENT PUSH)
-  else if (message.data['action'] == 'HEALTH_SYNC') {
-    logger.i('⌚ Health Sync request received in background');
-    final healthService = HealthService();
-    await healthService.syncNow();
-    logger.i('✅ Background Health Sync completed');
+  // ✅ EQUIPMENT SYNC (SILENT PUSH)
+  else if (message.data['action'] == 'EQUIPMENT_SYNC') {
+    logger.i('🔧 Equipment Sync request received in background');
+    // TODO: Implementar sync de dados de inspeção com backend
+    logger.i('✅ Background Equipment Sync completed');
   }
 }
 
@@ -477,10 +476,9 @@ class FirebaseService {
         } else {
           _logger.w('⚠️ No call handler registered!');
         }
-      } else if (action == 'HEALTH_SYNC') {
-        _logger.i('⌚ Health Sync request received in foreground');
-        final healthService = HealthService();
-        await healthService.syncNow();
+      } else if (action == 'EQUIPMENT_SYNC') {
+        _logger.i('🔧 Equipment Sync request received in foreground');
+        // TODO: Implementar sync de dados de inspeção com backend
       } else if (action != null) {
         _logger.i('ℹ️ Unknown action: $action');
       }

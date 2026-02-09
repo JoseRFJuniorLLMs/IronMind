@@ -219,7 +219,7 @@ class FocusableTextField extends StatelessWidget {
               obscureText: obscureText,
               onChanged: onChanged,
               onEditingComplete: onEditingComplete,
-              style: const TextStyle(fontSize: 18), // Larger for elderly
+              style: const TextStyle(fontSize: 18), // Larger for field readability
               decoration: InputDecoration(
                 labelText: labelText,
                 hintText: hintText,

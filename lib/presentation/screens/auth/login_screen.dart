@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 12),
                     Text(
                       'Digite seu CPF para entrar',
-                      style: AppTextStyles.elderlyBody.copyWith(
+                      style: AppTextStyles.accessibleBody.copyWith(
                         color: Colors.white.withOpacity(0.9),
                       ),
                     ),
@@ -169,11 +169,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           }),
                         ],
-                        style: AppTextStyles.elderlyNumber,
+                        style: AppTextStyles.accessibleNumber,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
                           hintText: '000.000.000-00',
-                          hintStyle: AppTextStyles.elderlyNumber.copyWith(
+                          hintStyle: AppTextStyles.accessibleNumber.copyWith(
                             color: Colors.grey[400],
                           ),
                           border: OutlineInputBorder(
@@ -241,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SizedBox(width: 12),
                                   Text(
                                     'ENTRAR',
-                                    style: AppTextStyles.elderlyButtonLarge,
+                                    style: AppTextStyles.accessibleButtonLarge,
                                   ),
                                 ],
                               ),
@@ -275,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       label: Text(
                         'Precisa de ajuda?',
-                        style: AppTextStyles.elderlyLabel.copyWith(
+                        style: AppTextStyles.accessibleLabel.copyWith(
                           color: Colors.white.withOpacity(0.9),
                         ),
                       ),

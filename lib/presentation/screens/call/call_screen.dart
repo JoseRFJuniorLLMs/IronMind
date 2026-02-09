@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eva_mobile/providers/call_provider.dart'; // Corrected path
-import 'package:eva_mobile/presentation/widgets/pulsing_button.dart';
+import '../../../providers/call_provider.dart';
+import '../../widgets/pulsing_button.dart';
 import 'package:logger/logger.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:math'; // For random selection

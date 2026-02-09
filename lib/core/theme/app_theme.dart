@@ -35,7 +35,7 @@ class AppTheme {
       // 🔤 Accessible Text Theme - Respects user's font size preferences
       textTheme: _buildTextTheme(context, textScaleFactor, isBoldText),
 
-      // Larger touch targets for buttons (elderly-friendly)
+      // Larger touch targets for buttons (field-friendly)
       buttonTheme: const ButtonThemeData(
         minWidth: AccessibilityHelper.recommendedTouchTargetSize,
         height: AccessibilityHelper.recommendedTouchTargetSize,
