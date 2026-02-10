@@ -156,7 +156,7 @@ class SpatialAnalysisResult {
 /// - Tool calling (search_manual, check_inventory)
 /// - Thinking budget (fast preview vs deep analysis)
 class GeminiSpatialEngine {
-  final String _apiKey;
+  String _apiKey;
   final String _modelId;
   final String _baseUrl;
 
@@ -170,7 +170,9 @@ class GeminiSpatialEngine {
     String baseUrl = 'https://generativelanguage.googleapis.com/v1beta',
   })  : _apiKey = apiKey ?? '',
         _modelId = modelId,
-        _baseUrl = baseUrl;
+        _baseUrl = baseUrl {
+    _isConfigured = _apiKey.isNotEmpty;
+  }
 
   bool get isConfigured => _isConfigured && _apiKey.isNotEmpty;
   int get totalCalls => _totalCalls;
@@ -178,7 +180,9 @@ class GeminiSpatialEngine {
 
   /// Configura com API key (carregada do .env)
   void configure(String apiKey) {
+    _apiKey = apiKey;
     _isConfigured = apiKey.isNotEmpty;
+    debugPrint('[GeminiSpatial] Configurado: ${isConfigured ? "OK" : "sem key"}');
   }
 
   /// Análise espacial completa de um frame com defeito

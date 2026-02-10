@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 /// Comandos de voz suportados
 enum VoiceCommand {
@@ -39,18 +41,16 @@ class DailyStats {
 
 /// Controlador de voz EVA integrado com IronMind
 ///
-/// Reutiliza a infraestrutura do EVA-Mobile:
-/// - Whisper Small Q5 (140MB) para STT offline
-/// - Piper TTS pt-BR (15MB) para respostas faladas
-/// - 16+ comandos de voz em português
+/// TTS offline via motor nativo do Android (Google TTS pt-BR)
+/// STT via Whisper Small Q5 (futuro)
+/// 16+ comandos de voz em português
 class EVAVoiceController {
-  // Serviços de voz (do EVA-Mobile)
-  // late NativeAudioService _audioService;
-  // late WhisperSTT _stt;
-  // late PiperTTS _tts;
+  final FlutterTts _tts = FlutterTts();
 
   String? _lastSpokenText;
   bool _isListening = false;
+  bool _isSpeaking = false;
+  bool _isInitialized = false;
 
   /// Mapeamento de palavras-chave para comandos
   final Map<String, VoiceCommand> _commandMap = {
@@ -114,6 +114,49 @@ class EVAVoiceController {
   EVAVoiceController();
 
   bool get isListening => _isListening;
+  bool get isSpeaking => _isSpeaking;
+
+  /// Inicializa o motor TTS com pt-BR
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    try {
+      // Configura idioma pt-BR
+      await _tts.setLanguage('pt-BR');
+
+      // Velocidade: 0.5 = lento, 1.0 = normal. 0.45 para ambiente industrial ruidoso
+      await _tts.setSpeechRate(0.45);
+
+      // Pitch: 1.0 = normal, 0.9 = mais grave (melhor para alertas)
+      await _tts.setPitch(0.9);
+
+      // Volume máximo para ambiente industrial
+      await _tts.setVolume(1.0);
+
+      // Callbacks de estado
+      _tts.setStartHandler(() {
+        _isSpeaking = true;
+      });
+
+      _tts.setCompletionHandler(() {
+        _isSpeaking = false;
+      });
+
+      _tts.setErrorHandler((msg) {
+        _isSpeaking = false;
+        debugPrint('[EVA-TTS] Erro: $msg');
+      });
+
+      _tts.setCancelHandler(() {
+        _isSpeaking = false;
+      });
+
+      _isInitialized = true;
+      debugPrint('[EVA-TTS] Inicializado: pt-BR, rate=0.45, pitch=0.9');
+    } catch (e) {
+      debugPrint('[EVA-TTS] Falha ao inicializar: $e');
+    }
+  }
 
   /// Inicia a escuta de comando de voz
   Future<VoiceCommand?> processVoice() async {
@@ -212,7 +255,6 @@ class EVAVoiceController {
 
       case VoiceCommand.explain:
         await speak('Analisando. Aguarde.');
-        // TODO: Buscar última inspeção e usar Gemini Spatial
         break;
 
       case VoiceCommand.sync:
@@ -241,22 +283,45 @@ class EVAVoiceController {
     }
   }
 
-  /// Sintetiza e fala texto via Piper TTS (50ms)
+  /// Fala texto via TTS nativo (offline, pt-BR)
+  /// Se já estiver falando, interrompe e fala o novo texto (prioridade para alertas)
   Future<void> speak(String text) async {
+    if (text.isEmpty) return;
     _lastSpokenText = text;
 
-    // TODO: Implementar com Piper TTS
-    // final audioBytes = await _tts.synthesize(
-    //   text, voice: 'pt-BR-male', speed: 1.0);
-    // await _audioService.play(audioBytes);
+    // Inicializa se necessário
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    // Interrompe fala anterior (alerta novo tem prioridade)
+    if (_isSpeaking) {
+      await _tts.stop();
+    }
+
+    try {
+      await _tts.speak(text);
+      debugPrint('[EVA-TTS] Falando: ${text.length > 60 ? '${text.substring(0, 60)}...' : text}');
+    } catch (e) {
+      debugPrint('[EVA-TTS] Erro ao falar: $e');
+    }
+  }
+
+  /// Para a fala atual
+  Future<void> stop() async {
+    if (_isSpeaking) {
+      await _tts.stop();
+      _isSpeaking = false;
+    }
   }
 
   Future<DailyStats> _getDailyStats() async {
-    // TODO: Buscar do repositório local
     return DailyStats(total: 0, approved: 0, rejected: 0, uncertain: 0);
   }
 
   void dispose() {
     _isListening = false;
+    _isSpeaking = false;
+    _tts.stop();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../detection/yolo_engine.dart';
 import '../segmentation/edgesam_segmenter.dart';
 import '../diagnosis/gemini_spatial_engine.dart';
@@ -82,15 +83,25 @@ class InspectionOrchestrator {
     debugPrint('[Orchestrator] Equipment type: $type');
   }
 
-  /// Inicializa o pipeline (carrega modelos warm + manuais)
+  /// Inicializa o pipeline (carrega modelos warm + manuais + Gemini key)
   Future<void> initialize() async {
     debugPrint('[Orchestrator] Inicializando pipeline de inspeção...');
     await Future.wait([
       modelManager.initialize(),
       manualLookup.initialize(),
+      if (voiceController != null) voiceController!.initialize(),
     ]);
+
+    // Configura Gemini com API key do .env
+    final geminiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+    if (geminiKey.isNotEmpty) {
+      gemini.configure(geminiKey);
+    }
+
     _sessionStart = DateTime.now();
-    debugPrint('[Orchestrator] Pipeline pronto. Manuais: ${manualLookup.entryCount} entradas');
+    debugPrint('[Orchestrator] Pipeline pronto. '
+        'Manuais: ${manualLookup.entryCount} entradas, '
+        'Gemini: ${gemini.isConfigured ? "OK" : "sem key"}');
   }
 
   /// Processa um frame da câmera (chamado a cada ~33ms para 30fps)
