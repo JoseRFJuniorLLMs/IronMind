@@ -5,6 +5,7 @@ import '../segmentation/edgesam_segmenter.dart';
 import '../voice/yamnet_classifier.dart';
 
 /// Gerencia ciclo de vida dos modelos: load, unload, fallback
+/// Hardware: GPU > NPU > DSP > CPU (via NNAPI delegate)
 /// Otimiza RAM mantendo apenas modelos necessários carregados
 enum ModelTier {
   /// Modelos sempre quentes (YOLO + YAMNet) ~18MB
@@ -47,22 +48,31 @@ class ModelManager {
   }
 
   /// Inicializa modelos warm (YOLO + YAMNet)
+  /// Non-blocking: falhas individuais nao impedem o resto
+  /// Hardware: GPU > NPU > DSP > CPU (via NNAPI)
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    debugPrint('[ModelManager] Inicializando modelos warm...');
+    debugPrint('[ModelManager] Inicializando modelos (GPU prioritario)...');
 
-    // Carrega YOLO (com fallback automático interno)
-    final yoloOk = await yoloEngine.initialize();
-    if (!yoloOk) {
-      debugPrint('[ModelManager] ERRO: Nenhum modelo YOLO disponível!');
-    }
-
-    // Carrega YAMNet (3MB, rápido)
-    await yamnet.initialize();
+    // Carrega modelos em paralelo, sem bloquear se algum falhar
+    await Future.wait([
+      _safeInit('YOLO', () => yoloEngine.initialize()),
+      _safeInit('YAMNet', () => yamnet.initialize()),
+    ]);
 
     _isInitialized = true;
-    debugPrint('[ModelManager] Modelos warm prontos. RAM: ~${estimatedRAMUsage}MB');
+    debugPrint('[ModelManager] Init completo. RAM: ~${estimatedRAMUsage}MB');
+  }
+
+  /// Wrapper seguro: falha individual nao propaga
+  Future<void> _safeInit(String name, Future<dynamic> Function() init) async {
+    try {
+      await init().timeout(const Duration(seconds: 3));
+      debugPrint('[ModelManager] $name: OK');
+    } catch (e) {
+      debugPrint('[ModelManager] $name falhou (continuando): $e');
+    }
   }
 
   /// Atualiza modo bateria e ajusta modelos

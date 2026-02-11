@@ -10,8 +10,9 @@ import '../voice/eva_voice_controller.dart';
 import '../voice/yamnet_classifier.dart';
 import 'detection_overlay.dart';
 
-/// Widget principal de inspeção com câmera real-time + NPU inference
-/// Pipeline: Camera 30fps → Isolate → NPU YOLO → Overlay → Display
+/// Widget principal de inspeção com câmera real-time + GPU/NPU inference
+/// Pipeline: Camera 30fps → Isolate → GPU YOLO → Overlay → Display
+/// Estratégia: Camera-first (mostra imagem imediato), modelos em background
 class InspectionPreviewScreen extends StatefulWidget {
   final String machineType; // trator, caminhao, mineracao
   final String? machineId;
@@ -37,7 +38,9 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
   int _fps = 0;
   int _frameCount = 0;
   bool _isProcessing = false;
-  bool _isInitialized = false;
+  bool _isCameraReady = false;
+  bool _isModelsReady = false;
+  String _loadingStatus = 'Iniciando camera...';
   String? _audioAlert;
   Timer? _fpsTimer;
 
@@ -49,64 +52,89 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
   }
 
   Future<void> _initializeAll() async {
-    // 1. Inicializa câmera
-    final cameras = await availableCameras();
-    if (cameras.isEmpty) {
-      debugPrint('[Preview] Nenhuma câmera disponível');
+    // FASE 1: Camera PRIMEIRO (mostra imagem imediato, sem esperar modelos)
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        debugPrint('[Preview] Nenhuma camera disponivel');
+        if (mounted) setState(() => _loadingStatus = 'Sem camera disponivel');
+        return;
+      }
+
+      final camera = cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+
+      _cameraController = CameraController(
+        camera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+
+      await _cameraController!.initialize();
+
+      // FPS counter
+      _fpsTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) {
+          setState(() {
+            _fps = _frameCount;
+            _frameCount = 0;
+          });
+        }
+      });
+
+      // Camera pronta - mostra preview IMEDIATAMENTE
+      if (mounted) {
+        setState(() {
+          _isCameraReady = true;
+          _loadingStatus = 'Carregando modelos GPU...';
+        });
+      }
+      debugPrint('[Preview] Camera pronta - mostrando preview');
+    } catch (e) {
+      debugPrint('[Preview] Erro na camera: $e');
+      if (mounted) setState(() => _loadingStatus = 'Erro camera: $e');
       return;
     }
 
-    // Prioriza câmera traseira (inspeção de máquinas)
-    final camera = cameras.firstWhere(
-      (c) => c.lensDirection == CameraLensDirection.back,
-      orElse: () => cameras.first,
-    );
-
-    _cameraController = CameraController(
-      camera,
-      ResolutionPreset.medium, // 720p para balance FPS/qualidade
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.yuv420,
-    );
-
-    await _cameraController!.initialize();
-
-    // 2. Inicializa orchestrator
-    _orchestrator = InspectionOrchestrator(
-      voiceController: EVAVoiceController(),
-    );
-
-    // Propaga tipo de equipamento para ManualLookup e Gemini
-    _orchestrator!.setEquipmentType(widget.machineType);
-
-    _orchestrator!.onAlert = (alert) {
-      setState(() => _audioAlert = alert);
-      // Limpa alerta após 5s
-      Future.delayed(const Duration(seconds: 5), () {
-        if (mounted) setState(() => _audioAlert = null);
-      });
-    };
-
-    await _orchestrator!.initialize();
-
-    // 3. FPS counter
-    _fpsTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) {
-        setState(() {
-          _fps = _frameCount;
-          _frameCount = 0;
+    // FASE 2: Modelos em BACKGROUND com timeout de 5s
+    try {
+      _orchestrator = InspectionOrchestrator(
+        voiceController: EVAVoiceController(),
+      );
+      _orchestrator!.setEquipmentType(widget.machineType);
+      _orchestrator!.onAlert = (alert) {
+        setState(() => _audioAlert = alert);
+        Future.delayed(const Duration(seconds: 5), () {
+          if (mounted) setState(() => _audioAlert = null);
         });
+      };
+
+      // Timeout de 5s - se modelos nao carregarem, segue em modo camera-only
+      await _orchestrator!.initialize().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          debugPrint('[Preview] Timeout modelos (5s) - modo camera-only');
+        },
+      );
+
+      if (mounted) {
+        setState(() => _isModelsReady = true);
       }
-    });
-
-    // 4. Inicia stream de imagens
-    await _cameraController!.startImageStream(_onCameraFrame);
-
-    if (mounted) {
-      setState(() => _isInitialized = true);
+      debugPrint('[Preview] Modelos prontos');
+    } catch (e) {
+      debugPrint('[Preview] Modelos falharam (continuando camera-only): $e');
     }
 
-    debugPrint('[Preview] Câmera e NPU prontos - streaming 30fps');
+    // FASE 3: Inicia stream de frames
+    try {
+      await _cameraController!.startImageStream(_onCameraFrame);
+      debugPrint('[Preview] Camera + GPU streaming 30fps');
+    } catch (e) {
+      debugPrint('[Preview] Erro ao iniciar stream: $e');
+    }
   }
 
   /// Callback para cada frame da câmera (~30fps)
@@ -119,7 +147,7 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
       // Converte CameraImage (YUV420) para bytes RGB
       final imageBytes = _convertYUV420toRGB(image);
 
-      // Processa no NPU via orchestrator
+      // Processa na GPU/NPU via orchestrator
       final result = await _orchestrator!.processFrame(imageBytes);
 
       _frameCount++;
@@ -159,18 +187,19 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized || _cameraController == null) {
-      return const Scaffold(
+    // Loading screen APENAS enquanto camera nao esta pronta (< 2s)
+    if (!_isCameraReady || _cameraController == null) {
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: Colors.cyan),
-              SizedBox(height: 16),
+              const CircularProgressIndicator(color: Colors.cyan),
+              const SizedBox(height: 16),
               Text(
-                'Carregando NPU...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                _loadingStatus,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           ),
@@ -208,7 +237,7 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
             child: HUDWidget(
               fps: _fps,
               detectionCount: _lastResult?.detections.length ?? 0,
-              modelName: _lastResult?.modelUsed ?? 'Camera Pronta',
+              modelName: _lastResult?.modelUsed ?? (_isModelsReady ? 'GPU Ready' : 'Camera Only'),
               isOffline: false,
               audioAlert: _audioAlert,
             ),
@@ -429,16 +458,24 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
     debugPrint('[Preview] Diagnostico forcado solicitado');
 
     try {
-      await _cameraController!.stopImageStream();
+      // Para o stream (ignora erro se já parado)
+      try { await _cameraController!.stopImageStream(); } catch (_) {}
+
       final file = await _cameraController!.takePicture();
       final bytes = await File(file.path).readAsBytes();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Analisando imagem...'),
+            content: Row(
+              children: [
+                SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                SizedBox(width: 12),
+                Text('Enviando para Gemini...'),
+              ],
+            ),
             backgroundColor: Colors.orange,
-            duration: Duration(seconds: 1),
+            duration: Duration(seconds: 10),
           ),
         );
       }
@@ -453,10 +490,15 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
         );
 
         if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Gemini: ${result.ttsResume}'),
-              backgroundColor: Colors.green[700],
+              content: Text(result.source.contains('fallback')
+                  ? 'Gemini falhou: ${result.source}'
+                  : 'Gemini: ${result.ttsResume}'),
+              backgroundColor: result.source.contains('fallback')
+                  ? Colors.red[700]
+                  : Colors.green[700],
               duration: const Duration(seconds: 5),
             ),
           );
@@ -471,20 +513,35 @@ class _InspectionPreviewScreenState extends State<InspectionPreviewScreen>
           });
         }
       } else {
+        final reason = _orchestrator == null
+            ? 'Pipeline nao inicializado'
+            : 'API key GEMINI_API_KEY ausente no .env';
+        debugPrint('[Preview] Gemini indisponivel: $reason');
         if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Gemini nao configurado. Foto salva para analise posterior.'),
-              backgroundColor: Colors.orange[700],
-              duration: const Duration(seconds: 3),
+              content: Text('$reason. Foto salva: ${file.name}'),
+              backgroundColor: Colors.red[700],
+              duration: const Duration(seconds: 4),
             ),
           );
         }
       }
 
-      await _cameraController!.startImageStream(_onCameraFrame);
+      // Retoma stream (ignora erro se falhar)
+      try { await _cameraController!.startImageStream(_onCameraFrame); } catch (_) {}
     } catch (e) {
       debugPrint('[Preview] Erro no diagnostico: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro no diagnóstico: $e'),
+            backgroundColor: Colors.red[700],
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
       // Tenta retomar stream
       try { await _cameraController!.startImageStream(_onCameraFrame); } catch (_) {}
     }

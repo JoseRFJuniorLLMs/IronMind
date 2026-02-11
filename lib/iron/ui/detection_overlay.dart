@@ -162,7 +162,7 @@ class HUDWidget extends StatelessWidget {
             ),
           ),
           Text(
-            'NPU: $modelName',
+            'GPU: $modelName',
             style: const TextStyle(color: Colors.cyan, fontSize: 12),
           ),
           Text(

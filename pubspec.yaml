@@ -1,5 +1,5 @@
 name: ironmind
-description: IronMind - Inspeção Industrial com NPU em Tempo Real
+description: IronMind - Inspeção Industrial com GPU/NPU em Tempo Real
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -18,14 +18,14 @@ dependencies:
   # Navigation
   go_router: ^13.0.0
 
-  # ─── IRONMIND: NPU Inference ───
-  onnxruntime: ^1.4.1            # ONNX Runtime (NPU via NNAPI delegate)
+  # ─── IRONMIND: GPU/NPU Inference ───
+  onnxruntime: ^1.4.1            # ONNX Runtime (GPU > NPU via NNAPI delegate)
   tflite_flutter: ^0.10.4       # TFLite (YAMNet, fallback YOLO)
   camera: ^0.10.5+5             # Camera stream 30fps
   image: ^4.1.4                 # Image processing (YUV→RGB)
 
   # ─── IRONMIND: Voice (EVA) ───
-  sherpa_onnx: ^1.12.20         # Whisper STT offline
+  # sherpa_onnx removido: ~200MB+ em libs nativas, STT nao implementado ainda
   flutter_tts: ^4.0.2           # Piper TTS offline
   sound_stream: ^0.4.2          # Audio stream para YAMNet
   speech_to_text: ^7.0.0        # Voice navigation

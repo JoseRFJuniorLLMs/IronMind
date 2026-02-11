@@ -38,8 +38,8 @@ class InspectionResult {
   bool get hasManualText => manualText != null && manualText!.isNotEmpty;
 }
 
-/// Pipeline principal de inspeção: Camera → YOLO → EdgeSAM → Gemini Spatial → TTS
-/// Orquestra todos os modelos com decisões baseadas em incerteza
+/// Pipeline principal de inspeção: Camera → YOLO (GPU) → EdgeSAM → Gemini Spatial → TTS
+/// Hardware: GPU > NPU > CPU (via NNAPI). Orquestra modelos com decisões baseadas em incerteza
 class InspectionOrchestrator {
   final ModelManager modelManager;
   final UncertaintyAnalyzer uncertainty;
@@ -84,19 +84,39 @@ class InspectionOrchestrator {
   }
 
   /// Inicializa o pipeline (carrega modelos warm + manuais + Gemini key)
+  /// Cada componente tem timeout individual - falha de um nao bloqueia os outros
   Future<void> initialize() async {
-    debugPrint('[Orchestrator] Inicializando pipeline de inspeção...');
-    await Future.wait([
-      modelManager.initialize(),
-      manualLookup.initialize(),
-      if (voiceController != null) voiceController!.initialize(),
-    ]);
+    debugPrint('[Orchestrator] Inicializando pipeline...');
 
-    // Configura Gemini com API key do .env
-    final geminiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
-    if (geminiKey.isNotEmpty) {
-      gemini.configure(geminiKey);
+    // Gemini PRIMEIRO - configuração instantânea, não depende de nada
+    try {
+      final geminiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+      if (geminiKey.isNotEmpty) {
+        gemini.configure(geminiKey);
+        debugPrint('[Orchestrator] Gemini configurado OK');
+      } else {
+        debugPrint('[Orchestrator] GEMINI_API_KEY vazia no .env');
+      }
+    } catch (e) {
+      debugPrint('[Orchestrator] Gemini config falhou: $e');
     }
+
+    // Modelos em paralelo, cada um com timeout individual
+    await Future.wait([
+      modelManager.initialize().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () => debugPrint('[Orchestrator] ModelManager timeout (4s)'),
+      ),
+      manualLookup.initialize().timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => debugPrint('[Orchestrator] ManualLookup timeout (3s)'),
+      ),
+      if (voiceController != null)
+        voiceController!.initialize().timeout(
+          const Duration(seconds: 3),
+          onTimeout: () => debugPrint('[Orchestrator] TTS timeout (3s)'),
+        ),
+    ]);
 
     _sessionStart = DateTime.now();
     debugPrint('[Orchestrator] Pipeline pronto. '
@@ -105,12 +125,12 @@ class InspectionOrchestrator {
   }
 
   /// Processa um frame da câmera (chamado a cada ~33ms para 30fps)
-  /// Este é o HOT PATH - precisa ser < 70ms no NPU
+  /// Este é o HOT PATH - precisa ser < 70ms na GPU/NPU
   Future<InspectionResult> processFrame(Uint8List imageBytes) async {
     final stopwatch = Stopwatch()..start();
     _frameCount++;
 
-    // ─── STAGE 1: Detecção YOLO (22-35ms no NPU) ───
+    // ─── STAGE 1: Detecção YOLO (22-35ms na GPU/NPU) ───
     final detections = await modelManager.yoloEngine.predict(imageBytes);
     final decisions = uncertainty.analyzeFrame(detections);
     final urgency = uncertainty.frameUrgency(detections);

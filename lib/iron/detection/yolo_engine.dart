@@ -46,8 +46,9 @@ class BoundingBox {
   }
 }
 
-/// Motor de inferência YOLO com suporte a NPU via NNAPI
+/// Motor de inferência YOLO com suporte a GPU/NPU via NNAPI
 ///
+/// Hardware priority: GPU > NPU > DSP > CPU (via NNAPI delegate)
 /// Suporta YOLO26n (primário), YOLO-NAS-S (fallback 1), YOLOv8n (fallback 2)
 class YoloInferenceEngine {
   static const int inputSize = 640;
@@ -69,7 +70,7 @@ class YoloInferenceEngine {
 
   /// Inicializa com o modelo primário (YOLO26n)
   /// Fallback: YOLO26n → YOLO-NAS-S → YOLOv8n → modo demo (camera only)
-  /// NNAPI delega automaticamente: NPU > DSP > GPU > CPU
+  /// NNAPI delega automaticamente: GPU > NPU > DSP > CPU
   Future<bool> initialize({String? modelPath}) async {
     final models = [
       modelPath ?? 'assets/models/detection/yolo26n_ironmind_int8.onnx',
@@ -96,14 +97,13 @@ class YoloInferenceEngine {
   }
 
   Future<void> _loadModel(String modelPath) async {
-    // Verifica se o arquivo existe como asset
     // TODO: Implementar carregamento real com onnxruntime_flutter
-    // A cadeia de execucao NNAPI prioriza: NPU > DSP > GPU > CPU
+    // NNAPI delegate prioriza: GPU > NPU > DSP > CPU (automático)
     //
     // final modelBytes = await rootBundle.load(modelPath);
     // final options = OrtSessionOptions()
     //   ..setIntraOpNumThreads(4)
-    //   ..appendExecutionProvider_Nnapi(); // NNAPI: NPU > GPU > CPU auto
+    //   ..appendExecutionProvider_Nnapi(); // GPU > NPU > CPU auto
     // _session = OrtSession.fromBuffer(modelBytes.buffer.asUint8List(), options);
     throw UnsupportedError('Modelo $modelPath nao disponivel nos assets');
   }
@@ -118,7 +118,7 @@ class YoloInferenceEngine {
     // 1. Pré-processamento: RGB 640x640, normalizado [0,1]
     final preprocessed = _preprocessImage(imageBytes);
 
-    // 2. Inferência NPU (22ms target)
+    // 2. Inferência GPU/NPU (22ms target)
     // TODO: Chamar _session.runAsync quando ONNX Runtime disponível
     final rawOutput = await _runInference(preprocessed);
 

@@ -147,7 +147,6 @@ void main() async {
     // Inicializar IronSentinel (monitoramento de equipamento em background)
     logger.i('[IronMind] Initializing IronSentinel...');
     await IronSentinelService.initialize();
-    await Future.delayed(const Duration(seconds: 1));
     logger.i('[IronMind] IronSentinel configured (manual start via inspection)');
 
     runApp(MyApp(callProvider: callProvider));

@@ -1,4 +1,4 @@
-/// IronMind - Motor de Inspeção Industrial com NPU
+/// IronMind - Motor de Inspeção Industrial com GPU/NPU
 /// Barrel export de todos os módulos
 library iron;
 

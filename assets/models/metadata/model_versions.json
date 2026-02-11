@@ -71,6 +71,7 @@
       "status": "pending_download"
     }
   },
-  "last_updated": "2026-02-08",
+  "hardware_priority": "GPU > NPU > DSP > CPU",
+  "last_updated": "2026-02-11",
   "total_size_mb": 370
 }

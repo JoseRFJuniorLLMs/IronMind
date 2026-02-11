@@ -19,7 +19,7 @@ class SegmentationMask {
 
 /// EdgeSAM - Segment Anything otimizado para mobile
 ///
-/// 9.4MB INT8, 80ms latência, 30+ FPS na NPU
+/// 9.4MB INT8, 80ms latência, 30+ FPS na GPU/NPU
 /// Lazy-loaded: só carrega quando YOLO detecta defeito
 class EdgeSAMSegmenter {
   dynamic _session;
