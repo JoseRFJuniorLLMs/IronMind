@@ -23,7 +23,7 @@ class AuthProvider with ChangeNotifier {
   String? _fcmToken;
 
   AuthStatus get status => _status;
-  Operator? get operator_ => _operator;
+  Operator? get operator => _operator;
   String? get errorMessage => _errorMessage;
   String? get fcmToken => _fcmToken;
   bool get isAuthenticated => _status == AuthStatus.authenticated;

@@ -1,0 +1,17 @@
+﻿  error - Undefined class 'SpeechRecognitionResult' - lib\core\accessibility\voice_navigation.dart:108:31 - undefined_class
+  error - Target of URI doesn't exist: 'package:record/record.dart' - lib\core\safety\audio_capture_service.dart:4:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'audio_classifier.dart' - lib\core\safety\audio_capture_service.dart:6:8 - uri_does_not_exist
+  error - Undefined class 'AudioRecorder' - lib\core\safety\audio_capture_service.dart:9:9 - undefined_class
+  error - The method 'AudioRecorder' isn't defined for the type 'AudioCaptureService' - lib\core\safety\audio_capture_service.dart:9:35 - undefined_method
+  error - Undefined class 'AudioEventClassifier' - lib\core\safety\audio_capture_service.dart:10:9 - undefined_class
+  error - The method 'AudioEventClassifier' isn't defined for the type 'AudioCaptureService' - lib\core\safety\audio_capture_service.dart:10:44 - undefined_method
+  error - The name 'AudioClassificationResult' isn't a type, so it can't be used as a type argument - lib\core\safety\audio_capture_service.dart:12:20 - non_type_as_type_argument
+  error - The name 'AudioClassificationResult' isn't a type, so it can't be used as a type argument - lib\core\safety\audio_capture_service.dart:21:38 - non_type_as_type_argument
+  error - The name 'RecordConfig' isn't a class - lib\core\safety\audio_capture_service.dart:47:13 - creation_with_non_type
+  error - Undefined name 'AudioEncoder' - lib\core\safety\audio_capture_service.dart:48:18 - undefined_identifier
+  error - The name 'AudioClassificationResult' isn't a type, so it can't be used as a type argument - lib\core\safety\audio_capture_service.dart:116:10 - non_type_as_type_argument
+  error - The name 'AudioClassificationResult' isn't a type, so it can't be used as a type argument - lib\core\safety\audio_capture_service.dart:118:40 - non_type_as_type_argument
+  error - The method 'contains' isn't defined for the type 'ConnectivityResult' - lib\iron\data\sync_manager.dart:35:25 - undefined_method
+  error - The method 'contains' isn't defined for the type 'ConnectivityResult' - lib\iron\data\sync_manager.dart:40:28 - undefined_method
+  error - The getter 'operator' isn't defined for the type 'AuthProvider' - test\unit\auth_provider_test.dart:16:27 - undefined_getter
+  error - The getter 'operator' isn't defined for the type 'AuthProvider' - test\unit\auth_provider_test.dart:100:27 - undefined_getter
